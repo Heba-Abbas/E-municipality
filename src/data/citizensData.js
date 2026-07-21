@@ -1,0 +1,195 @@
+export const citizenFilters = {
+  statusOptions: ['الكل', 'متزوج', 'أعزب', 'مطلق', 'أرمل'],
+  
+  municipalityOptions: [
+    'الكل',
+    'بلدية المركز',
+    'بلدية الجنوب',
+    'بلدية الشمال',
+    'بلدية الشرق',
+    'بلدية الغرب'
+  ],
+  cityOptions: [
+    'الكل',
+    'حي الرياض',
+    'حي الزهور',
+    'حي السلام',
+    'حي المستقبل',
+    'حي التعاون',
+    'حي النسيم',
+    'حي السعادة',
+    'حي البحيرات'
+  ]
+}
+
+export const citizens = [
+  {
+    id: 1,
+    nationalId: '100000001',
+    fullName: 'أحمد محمد علي',
+    phone: '0501234567',
+    email: 'ahmed.ali@example.com',
+    birthPlace: 'دمشق',
+    birthDate: '1990-05-15',
+    municipality: 'بلدية المركز',
+    city: 'حي الرياض',
+    maritalStatus: 'متزوج',
+    citizenStats:"مفعل",
+    fileName: 'هوية_أحمد.pdf',
+    fileSize: '245 KB'
+  },
+  {
+    id: 2,
+    nationalId: '100000002',
+    fullName: 'سارة محمود سعيد',
+    phone: '0559876543',
+    email: 'sara.sa@example.com',
+    birthPlace: 'حلب',
+    birthDate: '1992-11-20',
+    municipality: 'بلدية الجنوب',
+    citizenStats:"مجمد",
+    city: 'حي الزهور',
+    maritalStatus: 'أعزب',
+    fileName: 'هوية_سارة.pdf',
+    fileSize: '312 KB'
+  },
+  {
+    id: 3,
+    nationalId: '100000003',
+    fullName: 'محمد خالد أحمد',
+    phone: '0561237890',
+    email: 'm.khalid@example.com',
+    birthPlace: 'حمص',
+    birthDate: '1988-02-10',
+    citizenStats:"مفعل",
+    municipality: 'بلدية الشمال',
+    city: 'حي السلام',
+    maritalStatus: 'متزوج',
+    fileName: 'هوية_محمد.pdf',
+    fileSize: '198 KB'
+  },
+  {
+    id: 4,
+    nationalId: '100000004',
+    fullName: 'نورة عبدالله حسن',
+    phone: '0509876543',
+    email: 'nourah.h@example.com',
+    birthPlace: 'اللاذقية',
+    birthDate: '1995-07-30',
+    citizenStats:"مفعل",
+    municipality: 'بلدية الشرق',
+    city: 'حي المستقبل',
+    maritalStatus: 'أعزب',
+    fileName: 'هوية_نورة.pdf',
+    fileSize: '276 KB'
+  },
+  {
+    id: 5,
+    nationalId: '100000005',
+    fullName: 'علي حسن صالح',
+    phone: '0554567891',
+    email: 'ali.salah@example.com',
+    birthPlace: 'حماة',
+    birthDate: '1991-03-12',
+    citizenStats:"مفعل",
+    municipality: 'بلدية الغرب',
+    city: 'حي الرياض',
+    maritalStatus: 'متزوج',
+    fileName: 'هوية_علي.pdf',
+    fileSize: '221 KB'
+  },
+  {
+    id: 6,
+    nationalId: '100000006',
+    fullName: 'مريم إبراهيم محمد',
+    phone: '0567891234',
+    email: 'mariam.e@example.com',
+    birthPlace: 'طرطوس',
+    birthDate: '1993-09-05',
+    citizenStats:"مجمد",
+    municipality: 'بلدية المركز',
+    city: 'حي التعاون',
+    maritalStatus: 'مطلقة',
+    fileName: 'هوية_مريم.pdf',
+    fileSize: '305 KB'
+  },
+  {
+    id: 7,
+    nationalId: '100000007',
+    fullName: 'خالد يوسف عبدالله',
+    phone: '0502345678',
+    email: 'khaled.y@example.com',
+    birthPlace: 'دمشق',
+    birthDate: '1987-12-25',
+    citizenStats:"مفعل",
+    municipality: 'بلدية المركز',
+    city: 'حي الرياض',
+    maritalStatus: 'متزوج',
+    fileName: 'هوية_خالد.pdf',
+    fileSize: '210 KB'
+  },
+  {
+    id: 8,
+    nationalId: '100000008',
+    fullName: 'هدى سعيد علي',
+    phone: '0556789123',
+    email: 'huda.s@example.com',
+    birthPlace: 'درعا',
+    birthDate: '1994-06-18',
+    citizenStats:"مفعل",
+    municipality: 'بلدية الجنوب',
+    city: 'حي النسيم',
+    maritalStatus: 'أرمل',
+    fileName: 'هوية_هدى.pdf',
+    fileSize: '289 KB'
+  },
+  {
+    id: 9,
+    nationalId: '100000009',
+    fullName: 'سلمان تركي محمد',
+    phone: '0503456789',
+    email: 's.anwar@example.com',
+    birthPlace: 'إدلب',
+    birthDate: '1989-01-08',
+    citizenStats:"مفعل",
+    municipality: 'بلدية الشرق',
+    city: 'حي السعادة',
+    maritalStatus: 'متزوج',
+    fileName: 'هوية_سلمان.pdf',
+    fileSize: '190 KB'
+  },
+  {
+    id: 10,
+    nationalId: '100000010',
+    fullName: 'أمل فؤاد أحمد',
+    phone: '0569123456',
+    email: 'amal.f@example.com',
+    birthPlace: 'السويداء',
+    birthDate: '1996-10-22',
+    citizenStats:"مفعل",
+    municipality: 'بلدية الجنوب',
+    city: 'حي البحيرات',
+    maritalStatus: 'أعزب',
+    fileName: 'هوية_أمل.pdf',
+    fileSize: '233 KB'
+  },
+  {
+    id: 11,
+    nationalId: '100070010',
+    fullName: 'أمل محمد قيس',
+    phone: '0569123856',
+    email: 'amal.f@example.com',
+    birthPlace: 'السويداء',
+    birthDate: '1996-10-22',
+    citizenStats:"مفعل",
+    municipality: 'بلدية الجنوب',
+    city: 'حي البحيرات',
+  maritalStatus: "أعزب",
+    fileName: 'هوية_أمل.pdf',
+    fileSize: '233 KB'
+  }
+]
+
+export const citizenStats = {
+ total: 4443, active: 4021, suspended: 214, pending: 208
+}
