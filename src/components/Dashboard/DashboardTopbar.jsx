@@ -1,53 +1,62 @@
-import { Bell, Menu, Settings} from "lucide-react";
+import { Bell, Menu, Settings } from "lucide-react";
+import ThemeToggle from "./../ThemeToggle";
 
 function DashboardTopbar() {
   return (
-    <header className="mb-3 rounded-xl border border-[#2B3744] bg-[#151E27] px-4 py-3">
+    <header className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-md transition-colors duration-300 dark:border-white/5 dark:bg-[#101922] dark:shadow-[0_10px_24px_rgba(0,0,0,0.18)]">
       <div className="flex items-center justify-between">
         
-        {/* Right */}
+        {/* Right (العنوان وزر القائمة) */}
         <div className="flex items-center gap-3">
-            
-          <button className="text-white"><Menu size={18} /></button>
-          <h1 className="text-lg font-semibold text-white">الرئيسية</h1>
+          <button className="text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
+            <Menu size={18} />
+          </button>
+          <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">الرئيسية</h1>
         </div>
-        {/* Left */}
-        <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-xs text-white">
-            <span>Dark mode</span>
 
-            <button className="relative h-5 w-10 rounded-full bg-emerald-500">
-              <span className="absolute right-0.5 top-0.5 h-4 w-4 rounded-full bg-white" />
-            </button>
+        {/* Left (الأدوات وحساب المستخدم) */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          
+          {/* زر تبديل الثيم */}
+          <div className="flex items-center">
+            <ThemeToggle />
           </div>
-          <div className="h-5 w-px bg-gray-600" />
 
-          <button><Bell size={18} /></button>
+          {/* خط فاصل */}
+          <div className="h-5 w-px bg-slate-200 dark:bg-white/10" />
 
-          <div className="h-5 w-px bg-gray-600" />
-<button><Settings size={18} /></button>
-          <div className="h-5 w-px bg-gray-600" />
-          <div className="flex items-center gap-2">
-            
+          {/* زر الإشعارات */}
+          <button className="text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
+            <Bell size={18} />
+          </button>
 
+          {/* خط فاصل */}
+          <div className="h-5 w-px bg-slate-200 dark:bg-white/10" />
+
+          {/* زر الإعدادات */}
+          <button className="text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
+            <Settings size={18} />
+          </button>
+
+          {/* خط فاصل */}
+          <div className="h-5 w-px bg-slate-200 dark:bg-white/10" />
+
+          {/* معلومات المستخدم والصورة الشخصية */}
+          <div className="flex items-center gap-2.5">
             <div className="text-right leading-4">
-              <p className="text-sm text-white">وسام أحمد</p>
-              <p className="text-[11px] text-gray-400">(مدير النظام)</p>
+              <p className="text-sm font-medium text-slate-800 dark:text-slate-100">وسام أحمد</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">(مدير النظام)</p>
             </div>
             <img
               src="/images/user.png"
               alt="user"
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full border border-slate-200 object-cover dark:border-white/10"
             />
           </div>
 
-          
-
-          
         </div>
 
       </div>
-
     </header>
   );
 }

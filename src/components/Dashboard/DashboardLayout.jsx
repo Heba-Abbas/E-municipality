@@ -4,7 +4,7 @@ import DashboardTopbar from './DashboardTopbar'
 
 function DashboardLayout() {
   return (
-    <div className="min-h-screen bg-[#111a22] text-slate-100" dir="rtl">
+    <div className="min-h-screen bg-slate-100 text-slate-800 transition-colors duration-300 dark:bg-[#111a22] dark:text-slate-100" dir="rtl">
       <div className="flex min-h-screen flex-col lg:flex-row">
         <DashboardSidebar />
 
