@@ -6,7 +6,7 @@ import ResetPasswordPage from '../components/Auth/ResetPasswordPage'
 import VerifyEmailPage from '../components/Auth/VerifyEmailPage'
 import AddPasswordPage from '../components/Auth/AddPasswordPage'
 import DashboardPage from '../pages/DashboardPage'
-import CitizensPage from '../components/Dashboard/CitizensPage'
+import CitizensPage from '../pages/CitizensPage'
 import ComingSoonPage from '../pages/ComingSoonPage'
 
 function AppRouter() {

@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { sidebarItems } from '../../data/dashboardData'
-import logo from '../../assets/logo.png'
+import { useTheme } from '../../context/ThemeContext'
+import logoLight from '../../assets/logo dark mode 1.png'
+import logoDark from '../../assets/logo light mode 1.png'
 
 import { 
   LayoutDashboard, 
@@ -22,6 +24,10 @@ const iconMap = {
 }
 
 function DashboardSidebar() {
+  const { darkMode } = useTheme()
+
+  const logo = darkMode ? logoDark : logoLight
+
   return (
     <aside className="w-full border-b border-slate-200 bg-white transition-colors duration-300 dark:border-white/5 dark:bg-[#0c141b] lg:w-[228px] lg:border-b-0 lg:border-l lg:border-slate-200 dark:lg:border-white/5">
       <div className="flex h-full flex-col px-3 py-3 lg:px-3 lg:py-4">

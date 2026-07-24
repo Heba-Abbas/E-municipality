@@ -7,8 +7,9 @@ import { ChevronDown, Calendar, Download } from 'lucide-react'
 function DashboardHomePage() {
   return (
     <div className="space-y-3 lg:space-y-4">
+      <h2 className="pr-2 text-lg font-semibold text-slate-800 dark:text-slate-100">التقارير والاحصائيات </h2>
       {/* 1. كروت الإحصائيات */}
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {dashboardStats.map((item) => (
           <StatCard key={item.label} {...item} />
         ))}

@@ -69,8 +69,8 @@ function DashboardCharts() {
           <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">توزيع الشكاوى حسب الحالة</h2>
         </div>
 
-        <div className="flex h-64 items-center justify-between gap-2">
-          <div className="h-full w-1/2">
+        <div className="flex h-64 items-center justify-between">
+          <div className="w-[60%] h-full gap-2">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -98,7 +98,7 @@ function DashboardCharts() {
             </ResponsiveContainer>
           </div>
 
-          <div className="w-1/2 space-y-4 text-right pl-2">
+          <div className="w-[58%] space-y-4 pr-6 text-right">
             {complaintDistribution.map((item, index) => (
               <div key={item.label} className="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-300">
                 <div className="flex items-center gap-2">
