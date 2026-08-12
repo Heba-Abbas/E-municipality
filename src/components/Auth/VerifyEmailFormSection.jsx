@@ -1,94 +1,135 @@
-import { useState } from 'react'
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import FormHeader from './FormHeader'
-import EmailInput from './EmailInput'
-import Button from './Button'
+
+import FormHeader from "./FormHeader";
+import EmailInput from "./EmailInput";
+import Button from "./Button";
 
 function VerifyEmailFormSection() {
-  const [formData, setFormData] = useState({ code: '' })
-  const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    code: "",
+  });
+
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const validateForm = () => {
-    const nextErrors = {}
 
-    if (!formData.code.trim()) {
-      nextErrors.code = 'الرمز مطلوب'
+  const validateForm = () => {
+    const nextErrors = {};
+
+    const code = formData.code.trim();
+
+    if (!code) {
+      nextErrors.code = "الرمز مطلوب";
+    } else if (!/^\d{4}$/.test(code)) {
+      nextErrors.code = "رمز التحقق يجب أن يتكون من 4 أرقام";
     }
 
-    setErrors(nextErrors)
-    return Object.keys(nextErrors).length === 0
-  }
+    setErrors(nextErrors);
+
+    return Object.keys(nextErrors).length === 0;
+  };
 
   const handleSubmit = async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  setIsLoading(true);
-
-  try {
     const email = localStorage.getItem("reset_email");
 
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/auth/verify-reset-otp",
-      {
-        email: email,
-        otp: formData.code,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    console.log("Verification Success:", response.data);
-
-    // إذا احتجنا الإيميل بالخطوة التالية
-    localStorage.setItem("verified_email", email);
-
-    // الانتقال إلى صفحة إعادة تعيين كلمة السر
-    navigate("/new-password");
-
-  } catch (error) {
-    console.error(error);
-
-    if (error.response?.data?.errors) {
-      setErrors({
-        code: error.response.data.errors.otp || error.response.data.errors.code,
-      });
-    } else {
-      alert(error.response?.data?.message || "رمز التحقق غير صحيح");
+    if (!email) {
+      alert("لم يتم العثور على البريد الإلكتروني");
+      navigate("/reset-password");
+      return;
     }
-  } finally {
-    setIsLoading(false);
-  }
-};
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const otp = formData.code.trim();
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/auth/verify-reset-otp",
+        {
+          email: email,
+          otp: otp,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Verification Success:", response.data);
+
+      if (response.data.success) {
+        // حفظ البيانات لاستخدامها في صفحة تغيير كلمة السر
+        localStorage.setItem("reset_email", email);
+        localStorage.setItem("reset_otp", otp);
+
+        // الانتقال إلى صفحة كلمة السر الجديدة
+        navigate("/new-password");
+      }
+    } catch (error) {
+      console.error("Verification Error:", error);
+
+      if (error.response?.data?.errors) {
+        const apiErrors = error.response.data.errors;
+
+        setErrors({
+          code:
+            apiErrors.otp?.[0] ||
+            apiErrors.code?.[0] ||
+            "رمز التحقق غير صحيح",
+        });
+      } else {
+        alert(
+          error.response?.data?.message ||
+            "رمز التحقق غير صحيح"
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="w-full lg:w-1/2 h-screen bg-white flex flex-col items-center justify-center px-4 py-8 lg:px-12">
-      <form onSubmit={handleSubmit} className="w-full max-w-md">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md"
+      >
         <FormHeader title="تحقق من بريدك الإلكتروني" />
 
         <div className="mb-8">
           <EmailInput
             value={formData.code}
-            onChange={(value) => setFormData({ code: value })}
+            onChange={(value) =>
+              setFormData({
+                code: value,
+              })
+            }
             error={errors.code}
             label="اكتب الرمز"
-            placeholder=""
+            placeholder="أدخل رمز التحقق المكون من 4 أرقام"
           />
         </div>
 
-        <Button type="submit" isLoading={isLoading} isDisabled={isLoading}>
+        <Button
+          type="submit"
+          isLoading={isLoading}
+          isDisabled={isLoading}
+        >
           تأكيد
         </Button>
       </form>
     </div>
-  )
+  );
 }
 
-export default VerifyEmailFormSection
+export default VerifyEmailFormSection;
