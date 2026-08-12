@@ -1,10 +1,10 @@
-import logo from '../../assets/logo.png'
+import logo from '../../assets/logo dark mode 1.png'
 
 function LogoSection({ message = 'أهلا بكم، الرجاء تسجيل الدخول' }) {
   return (
     <div className="hidden lg:flex w-full lg:w-1/2 h-screen bg-gradient-to-b from-blue-50 to-blue-100 flex-col items-center justify-start border-r-4 border-blue-400 px-4 py-14">
       {/* Welcome Text */}
-      <div className="text-center mb-10 mt-6 max-w-xs">
+      <div className="text-center mb-1 mt-6 max-w-xs">
         <p className="text-gray-600 text-sm leading-relaxed font-medium">
           {message}
         </p>

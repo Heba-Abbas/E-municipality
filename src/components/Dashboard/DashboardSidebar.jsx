@@ -9,9 +9,11 @@ import {
   Users, 
   Newspaper, 
   Calendar, 
+  PanelsTopLeft,
   FileText, 
   BarChart3,
-  Menu
+  Menu,
+  ClipboardList
 } from 'lucide-react'
 
 const iconMap = {
@@ -21,6 +23,8 @@ const iconMap = {
   events: Calendar,
   reports: FileText,
   departments: BarChart3,
+  services: PanelsTopLeft,
+  logs: ClipboardList,
 }
 
 function DashboardSidebar() {

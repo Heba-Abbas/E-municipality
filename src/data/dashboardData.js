@@ -89,10 +89,14 @@ export const recentComplaints = [
 
 export const sidebarItems = [
   { label: 'لوحة التحكم', path: '/dashboard', icon: 'dashboard' },
+  { label: 'المواطنين', path: '/dashboard/users', icon: 'users' },
   { label: 'الموظفين', path: '/dashboard/employees', icon: 'users' },
+  { label: 'الأقسام', path: '/dashboard/departments', icon: 'departments' },
+  { label: 'الخدمات', path: '/dashboard/services', icon: 'services' },
   { label: 'الأخبار', path: '/dashboard/news', icon: 'news' },
   { label: 'الفعاليات', path: '/dashboard/events', icon: 'events' },
-  { label: 'المواطنين', path: '/dashboard/users', icon: 'users' },
-  { label: 'التقارير', path: '/dashboard/reports', icon: 'reports' },
-  { label: 'الأقسام', path: '/dashboard/departments', icon: 'departments' }
+  { label: 'سجل العمليات', path: '/dashboard/operationslog', icon: 'logs' },
+  
+  
+  
 ]
