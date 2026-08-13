@@ -6,6 +6,7 @@ import EmployeesHeader from "../components/Employees/EmployeesHeader";
 import EmployeeFilters from "../components/Employees/EmployeeFilters";
 import EmployeesTable from "../components/Employees/EmployeesTable";
 import EmployeePagination from "../components/Employees/EmployeePagination";
+import AddEmployeeForm from "../components/Employees/AddEmployeeForm";
 
 function EmployeesPage() {
   const [search, setSearch] = useState("");
@@ -13,6 +14,8 @@ function EmployeesPage() {
   const [roleFilter, setRoleFilter] = useState("الكل");
   const [hireDateFilter, setHireDateFilter] = useState("");
 
+  const [showAddEmployee, setShowAddEmployee] = useState(false);
+  const [employeeList, setEmployeeList] = useState(employees);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -23,7 +26,7 @@ function EmployeesPage() {
   const filteredEmployees = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return employees.filter((employee) => {
+    return employeeList.filter((employee) => {
       const matchesSearch =
         !normalizedSearch ||
         [
@@ -64,6 +67,10 @@ function EmployeesPage() {
     roleFilter,
     hireDateFilter,
   ]);
+
+  const handleAddEmployee = (newEmployee) => {
+    setEmployeeList((prev) => [newEmployee, ...prev]);
+  };
 
   // =========================
   // Pagination
@@ -167,6 +174,7 @@ function EmployeesPage() {
         totalRows={totalRows}
         activeCount={employeesStatus.active}
         pendingCount={employeesStatus.pending}
+        onAddEmployee={() => setShowAddEmployee(true)}
       />
 
       {/* Filters */}
@@ -202,6 +210,12 @@ function EmployeesPage() {
         />
 
       </section>
+      {showAddEmployee && (
+        <AddEmployeeForm
+          onClose={() => setShowAddEmployee(false)}
+          onAddEmployee={handleAddEmployee}
+        />
+      )}
     </div>
   );
 }

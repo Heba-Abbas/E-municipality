@@ -4,6 +4,7 @@ import CitizenHeader from "../components/Citizens/CitizenHeader";
 import CitizenFilters from "../components/Citizens/CitizenFilters";
 import CitizensTable from "../components/Citizens/CitizensTable";
 import CitizenPagination from "../components/Citizens/CitizenPagination";
+import AddCitizenForm from "../components/Citizens/AddCitizenForm";
 
 function CitizensPage() {
   const [search, setSearch] = useState("");
@@ -12,11 +13,13 @@ function CitizensPage() {
   const [cityFilter, setCityFilter] = useState("الكل");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAddCitizen, setShowAddCitizen] = useState(false);
+  const [citizenList, setCitizenList] = useState(citizens);
 
   const filteredCitizens = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return citizens.filter((citizen) => {
+    return citizenList.filter((citizen) => {
       const matchesSearch =
         !normalizedSearch ||
         [
@@ -43,6 +46,10 @@ function CitizensPage() {
       );
     });
   }, [cityFilter, municipalityFilter, search, statusFilter]);
+
+  const handleAddCitizen = (newCitizen) => {
+    setCitizenList((prev) => [newCitizen, ...prev]);
+  };
 
   const totalRows = citizenStats.total;
   const totalPages = Math.max(1, Math.ceil(filteredCitizens.length / pageSize));
@@ -95,6 +102,7 @@ function CitizensPage() {
         totalRows={totalRows}
         activeCount={citizenStats.active}
         pendingCount={citizenStats.pending}
+        onAddCitizen={() => setShowAddCitizen(true)}
       />
 
       {/* 2. شريط البحث والفلترة */}
@@ -126,6 +134,12 @@ function CitizensPage() {
           pageNumbers={pageNumbers}
         />
       </section>
+      {showAddCitizen && (
+        <AddCitizenForm
+          onClose={() => setShowAddCitizen(false)}
+          onAddCitizen={handleAddCitizen}
+        />
+      )}
     </div>
   );
 }
