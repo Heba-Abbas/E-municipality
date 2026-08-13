@@ -8,7 +8,7 @@ function DashboardLayout() {
       <div className="flex min-h-screen flex-col lg:flex-row">
         <DashboardSidebar />
 
-        <main className="flex-1 px-3 py-3 lg:px-4 lg:py-4">
+        <main className="flex-1 min-w-0 px-3 py-3 lg:px-4 lg:py-4">
           <DashboardTopbar />
           <Outlet />
         </main>

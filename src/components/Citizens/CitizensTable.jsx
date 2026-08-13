@@ -108,6 +108,16 @@ function CitizensTable({ visibleCitizens, totalFilteredCount }) {
                 </td>
               </tr>
             ))}
+              {visibleCitizens.length === 0 && (
+              <tr>
+                <td
+                  colSpan={10}
+                  className="px-4 py-10 text-center text-slate-500 dark:text-slate-400"
+                >
+                  لا توجد بيانات موظفين مطابقة للبحث أو الفلاتر
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

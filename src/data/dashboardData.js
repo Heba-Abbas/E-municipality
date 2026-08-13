@@ -95,7 +95,7 @@ export const sidebarItems = [
   { label: 'الخدمات', path: '/dashboard/services', icon: 'services' },
   { label: 'الأخبار', path: '/dashboard/news', icon: 'news' },
   { label: 'الفعاليات', path: '/dashboard/events', icon: 'events' },
-  { label: 'سجل العمليات', path: '/dashboard/operationslog', icon: 'logs' },
+  { label: 'سجل العمليات', path: '/dashboard/operations-log', icon: 'logs' },
   
   
   

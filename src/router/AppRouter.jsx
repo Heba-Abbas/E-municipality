@@ -7,6 +7,7 @@ import VerifyEmailPage from '../components/Auth/VerifyEmailPage'
 import AddPasswordPage from '../components/Auth/AddPasswordPage'
 import DashboardPage from '../pages/DashboardPage'
 import CitizensPage from '../pages/CitizensPage'
+import EmployeesPage from './../pages/EmployeesPage'
 import ComingSoonPage from '../pages/ComingSoonPage'
 
 function AppRouter() {
@@ -22,11 +23,11 @@ function AppRouter() {
       <Route element={<DashboardLayout />}>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/employees" element={<ComingSoonPage title="الموظفين" />} />
+        <Route path="/dashboard/employees" element={<EmployeesPage/>} />
         <Route path="/dashboard/news" element={<ComingSoonPage title="الأخبار" />} />
         <Route path="/dashboard/events" element={<ComingSoonPage title="الفعاليات" />} />
         <Route path="/dashboard/users" element={<CitizensPage />} />
-        <Route path="/dashboard/operationslog" element={<ComingSoonPage title="سجل العمليات" />} />
+        <Route path="/dashboard/operations-log" element={<ComingSoonPage title="سجل العمليات" />} />
         <Route path="/dashboard/services" element={<ComingSoonPage title="الخدمات" />} />
         <Route path="/dashboard/departments" element={<ComingSoonPage title="الأقسام" />} />
 
