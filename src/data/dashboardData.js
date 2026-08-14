@@ -93,6 +93,7 @@ export const sidebarItems = [
   { label: 'الموظفين', path: '/dashboard/employees', icon: 'users' },
   { label: 'الأقسام', path: '/dashboard/departments', icon: 'departments' },
   { label: 'الخدمات', path: '/dashboard/services', icon: 'services' },
+  { label: 'البلديات', path: '/dashboard/municipalities', icon: 'municipalities' },
   { label: 'الأخبار', path: '/dashboard/news', icon: 'news' },
   { label: 'الفعاليات', path: '/dashboard/events', icon: 'events' },
   { label: 'سجل العمليات', path: '/dashboard/operations-log', icon: 'logs' },

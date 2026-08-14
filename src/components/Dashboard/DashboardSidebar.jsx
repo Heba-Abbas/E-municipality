@@ -14,6 +14,7 @@ import {
   BarChart3,
   Menu,
   Key,
+  Landmark,
   ClipboardList
 } from 'lucide-react'
 
@@ -26,6 +27,7 @@ const iconMap = {
   departments: BarChart3,
   services: PanelsTopLeft,
   roles: Key,
+  municipalities: Landmark,
   logs: ClipboardList,
 }
 
@@ -36,7 +38,7 @@ function DashboardSidebar() {
 
   return (
     <aside className="w-full border-b border-slate-200 bg-white transition-colors duration-300 dark:border-white/5 dark:bg-[#0c141b] lg:w-[228px] lg:border-b-0 lg:border-l lg:border-slate-200 dark:lg:border-white/5 lg:sticky lg:top-4 lg:self-start lg:h-[calc(100vh-2rem)]">
-      <div className="flex h-full flex-col px-3 py-3 lg:px-3 lg:py-4">
+      <div className="flex h-full flex-col px-3 py-3 lg:px-3 lg:py-4 overflow-y-auto">
         
         {/* صندوق اللوجو العلوي */}
         <div className="flex items-center justify-between rounded-2xl border border-emerald-500/20 bg-emerald-50/60 px-3 py-3 dark:border-emerald-500/15 dark:bg-emerald-500/5 lg:flex-col lg:justify-start lg:gap-4 lg:px-2 lg:py-4">

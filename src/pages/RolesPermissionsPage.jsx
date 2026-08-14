@@ -18,6 +18,7 @@ import {
 function RolesPermissionsPage() {
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
+  const [permissionSearch, setPermissionSearch] = useState("");
 
   const [selectedRole, setSelectedRole] = useState(null);
 
@@ -407,7 +408,14 @@ const response =
     <div className="space-y-4 lg:space-y-5">
       <RolesHeader
         rolesCount={roles.length}
-        permissionsCount={permissions.length}
+        permissionsCount={
+          // show count based on currently filtered permissions
+          permissionSearch
+            ? permissions.filter((p) =>
+                p.name.toLowerCase().includes(permissionSearch.trim().toLowerCase())
+              ).length
+            : permissions.length
+        }
       />
 
       {error && (
@@ -431,10 +439,10 @@ const response =
         <PermissionsPanel
           role={selectedRole}
           permissions={permissions}
+          search={permissionSearch}
+          setSearch={setPermissionSearch}
           onAddPermission={handleAddPermission}
-          addingPermissionId={
-            addingPermissionId
-          }
+          addingPermissionId={addingPermissionId}
         />
       </div>
 

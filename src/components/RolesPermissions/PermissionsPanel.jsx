@@ -10,8 +10,9 @@ function PermissionsPanel({
   permissions,
   onAddPermission,
   addingPermissionId,
+  search = "",
+  setSearch = () => {},
 }) {
-  const [search, setSearch] = useState("");
 
   const assignedPermissionNames = useMemo(() => {
     return new Set(
@@ -24,16 +25,14 @@ function PermissionsPanel({
   }, [role]);
 
   const filteredPermissions = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
+    const normalizedSearch = (search || "").trim().toLowerCase();
 
     if (!normalizedSearch) {
       return permissions;
     }
 
     return permissions.filter((permission) =>
-      permission.name
-        .toLowerCase()
-        .includes(normalizedSearch)
+      permission.name.toLowerCase().includes(normalizedSearch)
     );
   }, [permissions, search]);
 
@@ -88,9 +87,7 @@ function PermissionsPanel({
           <input
             type="text"
             value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="ابحث عن إذن..."
             className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pr-10 pl-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 dark:border-white/10 dark:bg-[#121b24] dark:text-white dark:placeholder:text-slate-500"
           />
