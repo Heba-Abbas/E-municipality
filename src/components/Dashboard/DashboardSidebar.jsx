@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { sidebarItems } from '../../data/dashboardData'
 import { useTheme } from '../../context/ThemeContext'
 import logoLight from '../../assets/logo dark mode 1.png'
@@ -15,7 +16,9 @@ import {
   Menu,
   Key,
   Landmark,
-  ClipboardList
+  ClipboardList,
+  LogOut,
+  Loader2,
 } from 'lucide-react'
 
 const iconMap = {
@@ -33,8 +36,43 @@ const iconMap = {
 
 function DashboardSidebar() {
   const { darkMode } = useTheme()
-
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const navigate = useNavigate()
   const logo = darkMode ? logoDark : logoLight
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return
+
+    try {
+      setIsLoggingOut(true)
+
+      const token = localStorage.getItem('token')
+
+      await fetch('http://127.0.0.1:8000/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          ...(token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {}),
+        },
+      })
+    } catch (error) {
+      console.error('Logout Error:', error)
+    } finally {
+
+      localStorage.removeItem('token')
+
+      localStorage.removeItem('user')
+
+      navigate('/login', { replace: true })
+
+      setIsLoggingOut(false)
+    }
+  }
 
   return (
     <aside className="w-full border-b border-slate-200 bg-white transition-colors duration-300 dark:border-white/5 dark:bg-[#0c141b] lg:w-[228px] lg:border-b-0 lg:border-l lg:border-slate-200 dark:lg:border-white/5 lg:sticky lg:top-4 lg:self-start lg:h-[calc(100vh-2rem)]">
@@ -82,6 +120,37 @@ function DashboardSidebar() {
             )
           })}
         </nav>
+
+     {/* تسجيل الخروج */}
+        <div className="mt-auto pt-4">
+
+          {/* الخط الفاصل */}
+          <div className="mb-4 border-t border-slate-200 dark:border-white/10" />
+          <div className="h-9"></div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex w-full items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/10 dark:bg-red-500/5 dark:text-red-300 dark:hover:bg-red-500/10"
+          >
+            {isLoggingOut ? (
+              <Loader2
+                className="h-5 w-5 animate-spin"
+                strokeWidth={1.8}
+              />
+            ) : (
+              <LogOut
+                className="h-5 w-5"
+                strokeWidth={1.8}
+              />
+            )}
+
+            <span>
+              {isLoggingOut ? 'جاري تسجيل الخروج...' : 'تسجيل الخروج'}
+            </span>
+          </button>
+        </div>
+
       </div>
     </aside>
   )
