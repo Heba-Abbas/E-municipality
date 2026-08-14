@@ -32,6 +32,12 @@ export const getGovernorates = async () => {
   return response.data;
 };
 
+// جلب بلديات لمجموعة محافظة
+export const getGovernorateMunicipalities = async (governorateId) => {
+  const response = await api.get(`/public/governorates/${governorateId}/municipalities`);
+  return response.data;
+};
+
 // جلب بلدية واحدة
 export const getMunicipality = async (id) => {
   const response = await api.get(`/admin/municipalities/${id}`);

@@ -13,6 +13,8 @@ import {
   getMunicipalities,
   getMunicipality,
   updateMunicipality,
+  getGovernorates,
+  getGovernorateMunicipalities,
 } from "../services/municipalitiesApi";
 
 function MunicipalitiesPage() {
@@ -41,20 +43,42 @@ function MunicipalitiesPage() {
   // جلب البلديات
   // ==========================================
 
-  const loadMunicipalities = async () => {
+  const [governorates, setGovernorates] = useState([]);
+  const [selectedGovernorate, setSelectedGovernorate] = useState("");
+  const [isGovFilterLoading, setIsGovFilterLoading] = useState(false);
+
+  const loadMunicipalities = async (govId = null) => {
     try {
       setIsLoading(true);
       setError("");
 
-      const response = await getMunicipalities();
+      let response;
 
-      if (!response.success) {
-        throw new Error(
-          response.message || "Failed to load municipalities"
-        );
+      if (govId) {
+        response = await getGovernorateMunicipalities(govId);
+      } else {
+        response = await getMunicipalities();
       }
 
-      setMunicipalities(response.data || []);
+      // Normalize different API shapes:
+      // - Some endpoints return { success, data }
+      // - Some endpoints return the array directly
+      let data = [];
+
+      if (response == null) {
+        data = [];
+      } else if (response.success === true) {
+        data = response.data || [];
+      } else if (Array.isArray(response)) {
+        data = response;
+      } else if (response.data && Array.isArray(response.data)) {
+        data = response.data;
+      } else {
+        // Unknown shape: throw to surface error
+        throw new Error(response.message || "Failed to load municipalities");
+      }
+
+      setMunicipalities(data || []);
     } catch (err) {
       console.error("Get Municipalities Error:", err);
 
@@ -69,7 +93,30 @@ function MunicipalitiesPage() {
   };
 
   useEffect(() => {
-    loadMunicipalities();
+    // load governorates for filter and initial municipalities
+    const init = async () => {
+      try {
+        setIsGovFilterLoading(true);
+        const res = await getGovernorates();
+        // governorates endpoint may return either array or wrapped object
+        if (!res) {
+          setGovernorates([]);
+        } else if (res.success === true) {
+          setGovernorates(res.data || []);
+        } else if (Array.isArray(res)) {
+          setGovernorates(res || []);
+        } else if (res.data && Array.isArray(res.data)) {
+          setGovernorates(res.data || []);
+        }
+      } catch (err) {
+        console.error("Get Governorates Error:", err);
+      } finally {
+        setIsGovFilterLoading(false);
+      }
+      await loadMunicipalities();
+    };
+
+    init();
   }, []);
 
   // ==========================================
@@ -82,6 +129,19 @@ function MunicipalitiesPage() {
     setFormErrors({});
     setSuccessMsg("");
     setIsFormOpen(true);
+  };
+
+  // ==========================================
+  // تغيير فلتر المحافظة
+  // ==========================================
+
+  const handleGovernorateFilter = async (govId) => {
+    try {
+      setSelectedGovernorate(govId);
+      await loadMunicipalities(govId || null);
+    } catch (err) {
+      console.error("Governorate Filter Error:", err);
+    }
   };
 
   // ==========================================
@@ -251,6 +311,10 @@ function MunicipalitiesPage() {
       <MunicipalitiesHeader
         totalRows={municipalities.length}
         onAdd={handleAdd}
+        governorates={governorates}
+        selectedGovernorate={selectedGovernorate}
+        onGovernorateChange={handleGovernorateFilter}
+        isGovLoading={isGovFilterLoading}
       />
 
       {/* Error */}
