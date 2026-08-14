@@ -19,6 +19,7 @@ const MANUAL_MAP = {
   'permissions.view': 'عرض الأذونات',
   'permissions.assign': 'تعيين إذن',
   'permissions.revoke': 'إلغاء إذن',
+  
 };
 
 const TOKEN_MAP = {
@@ -46,6 +47,18 @@ const TOKEN_MAP = {
   services: 'الخدمات',
   department: 'قسم',
   departments: 'الأقسام',
+  activate:'تفعيل',
+  municipalities:'المحافظات',
+  complaints:'الشكاوى',
+  complaint:'شكوى',
+  to:"الى",
+  approve:'الموافقة على',
+  requests:'الطلبات',
+  engineering:"هندسة",
+  execute:"تنفيذ",
+  force:"إجبار",
+  
+
 };
 
 export function translatePermissionName(name) {

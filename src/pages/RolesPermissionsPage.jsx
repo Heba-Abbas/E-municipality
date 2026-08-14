@@ -317,11 +317,19 @@ function RolesPermissionsPage() {
       setAddingPermissionId(permission.id);
       setError("");
 
-      const response =
-        await addPermissionToRole(
-          selectedRole.id,
-          permission.name
-        );
+     const currentPermissions =
+  (selectedRole.permissions || []).map((permission) =>
+    typeof permission === "string"
+      ? permission
+      : permission.name
+  );
+
+const response =
+  await addPermissionToRole(
+    selectedRole.id,
+    permission.name,
+    currentPermissions
+  );
 
       if (!response.success) {
         throw new Error(

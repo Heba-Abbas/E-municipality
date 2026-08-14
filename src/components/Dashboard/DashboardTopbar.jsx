@@ -3,7 +3,7 @@ import ThemeToggle from "./../ThemeToggle";
 
 function DashboardTopbar() {
   return (
-    <header className="mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-md transition-colors duration-300 dark:border-white/5 dark:bg-[#101922] dark:shadow-[0_10px_24px_rgba(0,0,0,0.18)]">
+    <header className="sticky top-4 z-20 mb-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-md transition-colors duration-300 dark:border-white/5 dark:bg-[#101922] dark:shadow-[0_10px_24px_rgba(0,0,0,0.18)]">
       <div className="flex items-center justify-between">
         
         {/* Right (العنوان وزر القائمة) */}

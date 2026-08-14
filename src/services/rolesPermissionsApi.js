@@ -114,7 +114,8 @@ export const getPermissions = async () => {
 
 export const addPermissionToRole = async (
   roleId,
-  permissionName
+  permissionName,
+  currentPermissions = []
 ) => {
   if (!roleId) {
     throw new Error("Role ID is required");
@@ -124,10 +125,18 @@ export const addPermissionToRole = async (
     throw new Error("Permission name is required");
   }
 
+  // الاحتفاظ بالأذونات الموجودة وإضافة الإذن الجديد
+  const permissions = [
+    ...new Set([
+      ...currentPermissions,
+      permissionName,
+    ]),
+  ];
+
   const response = await api.post(
     `/admin/roles/${roleId}/permissions`,
     {
-      permissions: [permissionName],
+      permissions,
     }
   );
 

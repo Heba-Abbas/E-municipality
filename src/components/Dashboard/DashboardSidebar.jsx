@@ -35,7 +35,7 @@ function DashboardSidebar() {
   const logo = darkMode ? logoDark : logoLight
 
   return (
-    <aside className="w-full border-b border-slate-200 bg-white transition-colors duration-300 dark:border-white/5 dark:bg-[#0c141b] lg:w-[228px] lg:border-b-0 lg:border-l lg:border-slate-200 dark:lg:border-white/5">
+    <aside className="w-full border-b border-slate-200 bg-white transition-colors duration-300 dark:border-white/5 dark:bg-[#0c141b] lg:w-[228px] lg:border-b-0 lg:border-l lg:border-slate-200 dark:lg:border-white/5 lg:sticky lg:top-4 lg:self-start lg:h-[calc(100vh-2rem)]">
       <div className="flex h-full flex-col px-3 py-3 lg:px-3 lg:py-4">
         
         {/* صندوق اللوجو العلوي */}
