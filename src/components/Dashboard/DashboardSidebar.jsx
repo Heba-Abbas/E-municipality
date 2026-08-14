@@ -13,6 +13,7 @@ import {
   FileText, 
   BarChart3,
   Menu,
+  Key,
   ClipboardList
 } from 'lucide-react'
 
@@ -24,6 +25,7 @@ const iconMap = {
   reports: FileText,
   departments: BarChart3,
   services: PanelsTopLeft,
+  roles: Key,
   logs: ClipboardList,
 }
 

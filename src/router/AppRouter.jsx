@@ -9,6 +9,7 @@ import DashboardPage from '../pages/DashboardPage'
 import CitizensPage from '../pages/CitizensPage'
 import EmployeesPage from './../pages/EmployeesPage'
 import ComingSoonPage from '../pages/ComingSoonPage'
+import RolesPermissionsPage from "./../pages/RolesPermissionsPage";
 
 function AppRouter() {
   return (
@@ -30,7 +31,8 @@ function AppRouter() {
         <Route path="/dashboard/operations-log" element={<ComingSoonPage title="سجل العمليات" />} />
         <Route path="/dashboard/services" element={<ComingSoonPage title="الخدمات" />} />
         <Route path="/dashboard/departments" element={<ComingSoonPage title="الأقسام" />} />
-
+        <Route path="/dashboard/roles-permissions" element={<RolesPermissionsPage />}
+/>
       </Route>
     </Routes>
   )
