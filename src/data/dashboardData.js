@@ -96,7 +96,6 @@ export const sidebarItems = [
   { label: 'البلديات', path: '/dashboard/municipalities', icon: 'municipalities' },
   { label: 'الأخبار', path: '/dashboard/news', icon: 'news' },
   { label: 'الفعاليات', path: '/dashboard/events', icon: 'events' },
-  { label: 'سجل العمليات', path: '/dashboard/operations-log', icon: 'logs' },
   { label: 'الصلاحيات', path: '/dashboard/roles-permissions', icon: 'roles' },
   
   

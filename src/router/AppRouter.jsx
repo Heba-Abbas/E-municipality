@@ -29,7 +29,6 @@ function AppRouter() {
         <Route path="/dashboard/news" element={<ComingSoonPage title="الأخبار" />} />
         <Route path="/dashboard/events" element={<ComingSoonPage title="الفعاليات" />} />
         <Route path="/dashboard/users" element={<CitizensPage />} />
-        <Route path="/dashboard/operations-log" element={<ComingSoonPage title="سجل العمليات" />} />
         <Route path="/dashboard/services" element={<ComingSoonPage title="الخدمات" />} />
         <Route path="/dashboard/departments" element={<ComingSoonPage title="الأقسام" />} />
         <Route path="/dashboard/municipalities" element={<MunicipalitiesPage />} />
