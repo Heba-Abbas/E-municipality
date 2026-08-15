@@ -57,6 +57,9 @@ const TOKEN_MAP = {
   engineering:"هندسة",
   execute:"تنفيذ",
   force:"إجبار",
+  review:"مراجعة",
+  technical:"فني",
+  office:"مكتب",
   
 
 };

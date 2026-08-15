@@ -11,6 +11,7 @@ import EmployeesPage from './../pages/EmployeesPage'
 import ComingSoonPage from '../pages/ComingSoonPage'
 import RolesPermissionsPage from "./../pages/RolesPermissionsPage";
 import MunicipalitiesPage from './../pages/MunicipalitiesPage';
+import ServiceTypesPage from "../pages/ServiceTypesPage";
 
 function AppRouter() {
   return (
@@ -29,7 +30,7 @@ function AppRouter() {
         <Route path="/dashboard/news" element={<ComingSoonPage title="الأخبار" />} />
         <Route path="/dashboard/events" element={<ComingSoonPage title="الفعاليات" />} />
         <Route path="/dashboard/users" element={<CitizensPage />} />
-        <Route path="/dashboard/services" element={<ComingSoonPage title="الخدمات" />} />
+       <Route path="/dashboard/services" element={<ServiceTypesPage />} />
         <Route path="/dashboard/departments" element={<ComingSoonPage title="الأقسام" />} />
         <Route path="/dashboard/municipalities" element={<MunicipalitiesPage />} />
         <Route path="/dashboard/roles-permissions" element={<RolesPermissionsPage />}
