@@ -2,36 +2,46 @@ export const dashboardStats = [
   {
     label: 'إجمالي السكان',
     value: '4443',
-    icon: 'users'
+    icon: 'users',
   },
   {
     label: 'إجمالي الشكاوى',
     value: '223',
     extra: '60%',
-    icon: 'complaints'
+    icon: 'complaints',
   },
   {
     label: 'الشكاوى المنجزة',
     value: '134',
     extra: '60%',
-    icon: 'completed'
+    icon: 'completed',
   },
   {
     label: 'الفعاليات',
     value: '12',
-    icon: 'Events'
+    icon: 'Events',
   },
-  {
-    label: 'التقارير',
-    value: '7',
-    icon: 'reports'
-  }
 ]
 
 export const complaintDistribution = [
-  { label: 'مكتمل', value: 146, percent: 65, color: 'bg-emerald-500' },
-  { label: 'قيد المعالجة', value: 61, percent: 27, color: 'bg-lime-400' },
-  { label: 'غير مدفوع', value: 16, percent: 8, color: 'bg-emerald-200' }
+  {
+    label: 'مكتمل',
+    value: 146,
+    percent: 65,
+    color: 'bg-emerald-500',
+  },
+  {
+    label: 'قيد المعالجة',
+    value: 61,
+    percent: 27,
+    color: 'bg-lime-400',
+  },
+  {
+    label: 'غير مدفوع',
+    value: 16,
+    percent: 8,
+    color: 'bg-emerald-200',
+  },
 ]
 
 export const weeklyComplaintCounts = [
@@ -41,7 +51,7 @@ export const weeklyComplaintCounts = [
   { label: 'الثلاثاء', value: 49 },
   { label: 'الأربعاء', value: 58 },
   { label: 'الخميس', value: 67 },
-  { label: 'الجمعة', value: 75 }
+  { label: 'الجمعة', value: 75 },
 ]
 
 export const recentComplaints = [
@@ -51,7 +61,7 @@ export const recentComplaints = [
     area: 'المنطقة 4',
     status: 'مكتمل',
     date: '2024-05-21',
-    createdAt: '2024-05-21'
+    createdAt: '2024-05-21',
   },
   {
     id: '442',
@@ -59,7 +69,7 @@ export const recentComplaints = [
     area: 'المنطقة 3',
     status: 'قيد المتابعة',
     date: '2024-05-20',
-    createdAt: '2024-05-20'
+    createdAt: '2024-05-20',
   },
   {
     id: '441',
@@ -67,7 +77,7 @@ export const recentComplaints = [
     area: 'المنطقة 2',
     status: 'مفتوح',
     date: '2024-05-18',
-    createdAt: '2024-05-18'
+    createdAt: '2024-05-18',
   },
   {
     id: '440',
@@ -75,7 +85,7 @@ export const recentComplaints = [
     area: 'المنطقة 1',
     status: 'مكتمل',
     date: '2024-05-13',
-    createdAt: '2024-05-13'
+    createdAt: '2024-05-13',
   },
   {
     id: '439',
@@ -83,28 +93,151 @@ export const recentComplaints = [
     area: 'المنطقة 5',
     status: 'قيد المعالجة',
     date: '2024-05-10',
-    createdAt: '2024-05-10'
-  }
+    createdAt: '2024-05-10',
+  },
 ]
 
+/*
+|--------------------------------------------------------------------------
+| Sidebar
+|--------------------------------------------------------------------------
+*/
+
 export const sidebarItems = [
-  { label: 'لوحة التحكم', path: '/dashboard', icon: 'dashboard' },
-  { label: 'الموظفين', path: '/dashboard/employees', icon: 'users' },
+  {
+    label: 'لوحة التحكم',
+    path: '/dashboard',
+    icon: 'dashboard',
+    allowedRoles: [
+      'system_admin',
+      'mayor',
+      'technical_office',
+      'municipality_admin',
+    ],
+  },
+
+  {
+    label: 'الموظفين',
+    path: '/dashboard/employees',
+    icon: 'users',
+    allowedRoles: [
+      'system_admin',
+      'municipality_admin',
+    ],
+  },
+
   {
     label: 'الخدمات',
     path: '/dashboard/services',
     icon: 'services',
+
     children: [
-      { label: 'طلبات المكتب الهندسي', path: '/dashboard/engineering-office/service-requests' },
-      { label: 'طلبات المكتب التقني', path: '/dashboard/technical-office/service-requests' },
-      { label: 'طلبات رئيس البلدية', path: '/dashboard/mayor/service-requests' },
-      { label: 'طلبات  المفتش الميداني', path: '/dashboard/field-inspector/service-requests' },
-      { label: 'طلبات مدير النظام', path: '/dashboard/admin/service-requests' },
+      {
+        label: 'طلبات المكتب الهندسي',
+        path: '/dashboard/engineering-office/service-requests',
+        allowedRoles: ['engineering_office'],
+      },
+
+      {
+        label: 'طلبات المكتب التقني',
+        path: '/dashboard/technical-office/service-requests',
+        allowedRoles: ['technical_office'],
+      },
+
+      {
+        label: 'طلبات رئيس البلدية',
+        path: '/dashboard/mayor/service-requests',
+        allowedRoles: ['mayor'],
+      },
+
+      {
+        label: 'طلبات المفتش الميداني',
+        path: '/dashboard/field-inspector/service-requests',
+        allowedRoles: ['field_inspector'],
+      },
+
+      {
+        label: 'طلبات مدير النظام',
+        path: '/dashboard/admin/service-requests',
+        allowedRoles: ['system_admin'],
+      },
     ],
   },
-  { label: 'البلديات', path: '/dashboard/municipalities', icon: 'municipalities' },
-  { label: 'الصلاحيات', path: '/dashboard/roles-permissions', icon: 'roles' },
-  
-  
-  
+
+  {
+    label: 'البلديات',
+    path: '/dashboard/municipalities',
+    icon: 'municipalities',
+    allowedRoles: ['system_admin'],
+  },
+
+  {
+    label: 'الصلاحيات',
+    path: '/dashboard/roles-permissions',
+    icon: 'roles',
+    allowedRoles: ['system_admin'],
+  },
+
+  {
+    label: 'الشكاوى',
+    path: '/dashboard/complaints/reports',
+    icon: 'complaints',
+    allowedRoles: ['technical_office'],
+  },
+
+  {
+    label: 'شكاوى قسمي',
+    path: '/dashboard/complaints/department',
+    icon: 'departmentComplaints',
+    allowedRoles: ['department_manager'],
+  },
 ]
+
+/*
+|--------------------------------------------------------------------------
+| Get Sidebar Items By Role
+|--------------------------------------------------------------------------
+*/
+
+export const getSidebarItemsByRole = (role) => {
+  if (!role) {
+    return []
+  }
+
+  return sidebarItems
+    .map((item) => {
+      /*
+       * إذا كان القسم يحتوي على أبناء
+       * مثل الخدمات
+       */
+      if (Array.isArray(item.children)) {
+        const visibleChildren = item.children.filter(
+          (child) =>
+            child.allowedRoles?.includes(role)
+        )
+
+        /*
+         * إذا ما عنده أي خدمة مسموحة
+         * نخفي قسم الخدمات بالكامل
+         */
+        if (visibleChildren.length === 0) {
+          return null
+        }
+
+        return {
+          ...item,
+          children: visibleChildren,
+        }
+      }
+
+      /*
+       * الأقسام العادية
+       */
+      if (item.allowedRoles?.includes(role)) {
+        return item
+      }
+
+      return null
+    })
+    .filter(Boolean)
+}
