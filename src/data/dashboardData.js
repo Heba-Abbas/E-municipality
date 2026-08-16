@@ -89,13 +89,19 @@ export const recentComplaints = [
 
 export const sidebarItems = [
   { label: 'لوحة التحكم', path: '/dashboard', icon: 'dashboard' },
-  { label: 'المواطنين', path: '/dashboard/users', icon: 'users' },
   { label: 'الموظفين', path: '/dashboard/employees', icon: 'users' },
-  { label: 'الأقسام', path: '/dashboard/departments', icon: 'departments' },
-  { label: 'الخدمات', path: '/dashboard/services', icon: 'services' },
+  {
+    label: 'الخدمات',
+    path: '/dashboard/services',
+    icon: 'services',
+    children: [
+      { label: 'طلبات المكتب الهندسي', path: '/dashboard/engineering-office/service-requests' },
+      { label: 'طلبات المكتب التقني', path: '/dashboard/technical-office/service-requests' },
+      { label: 'طلبات رئيس البلدية', path: '/dashboard/mayor/service-requests' },
+      { label: 'طلبات مدير النظام', path: '/dashboard/admin/service-requests' },
+    ],
+  },
   { label: 'البلديات', path: '/dashboard/municipalities', icon: 'municipalities' },
-  { label: 'الأخبار', path: '/dashboard/news', icon: 'news' },
-  { label: 'الفعاليات', path: '/dashboard/events', icon: 'events' },
   { label: 'الصلاحيات', path: '/dashboard/roles-permissions', icon: 'roles' },
   
   

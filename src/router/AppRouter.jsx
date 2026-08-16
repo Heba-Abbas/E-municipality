@@ -12,6 +12,9 @@ import ComingSoonPage from '../pages/ComingSoonPage'
 import RolesPermissionsPage from "./../pages/RolesPermissionsPage";
 import MunicipalitiesPage from './../pages/MunicipalitiesPage';
 import ServiceTypesPage from "../pages/ServiceTypesPage";
+import TechnicalOfficeRequestsPage from "../pages/TechnicalOfficeRequestsPage";
+import EngineeringOfficeRequestsPage from "../pages/EngineeringOfficeRequestsPage";
+import MayorRequestsPage from "../pages/MayorRequestsPage";
 
 function AppRouter() {
   return (
@@ -33,8 +36,11 @@ function AppRouter() {
        <Route path="/dashboard/services" element={<ServiceTypesPage />} />
         <Route path="/dashboard/departments" element={<ComingSoonPage title="الأقسام" />} />
         <Route path="/dashboard/municipalities" element={<MunicipalitiesPage />} />
-        <Route path="/dashboard/roles-permissions" element={<RolesPermissionsPage />}
-/>
+        <Route path="/dashboard/roles-permissions" element={<RolesPermissionsPage />} />
+        <Route path="/dashboard/technical-office/service-requests" element={<TechnicalOfficeRequestsPage />}/>
+        <Route path="/dashboard/engineering-office/service-requests" element={<EngineeringOfficeRequestsPage />}/>
+        <Route path="/dashboard/mayor/service-requests" element={<MayorRequestsPage />} />
+        <Route path="/dashboard/admin/service-requests" element={<ServiceTypesPage />} />
       </Route>
     </Routes>
   )

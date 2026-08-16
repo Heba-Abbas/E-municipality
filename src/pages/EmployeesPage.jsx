@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { employeesStatus, employees } from "../data/EmployeesData";
-
 import EmployeesHeader from "../components/Employees/EmployeesHeader";
 import EmployeeFilters from "../components/Employees/EmployeeFilters";
 import EmployeesTable from "../components/Employees/EmployeesTable";
@@ -9,74 +7,64 @@ import EmployeePagination from "../components/Employees/EmployeePagination";
 import AddEmployeeForm from "../components/Employees/AddEmployeeForm";
 
 function EmployeesPage() {
+  // removed filtering: show raw employee list
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("الكل");
   const [roleFilter, setRoleFilter] = useState("الكل");
   const [hireDateFilter, setHireDateFilter] = useState("");
 
   const [showAddEmployee, setShowAddEmployee] = useState(false);
-  const [employeeList, setEmployeeList] = useState(employees);
+  const [employeeList, setEmployeeList] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // =========================
-  // Filtering
-  // =========================
-
-  const filteredEmployees = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
-
-    return employeeList.filter((employee) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        [
-          employee.fullName,
-          employee.jobTd,
-          employee.nationalId,
-          employee.phone,
-          employee.email,
-          employee.role,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase()
-          .includes(normalizedSearch);
-
-      const matchesStatus =
-        statusFilter === "الكل" ||
-        employee.status === statusFilter;
-
-      const matchesRole =
-        roleFilter === "الكل" ||
-        employee.role === roleFilter;
-
-      const matchesHireDate =
-        !hireDateFilter ||
-        employee.hireDate === hireDateFilter;
-
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesRole &&
-        matchesHireDate
-      );
-    });
-  }, [
-    search,
-    statusFilter,
-    roleFilter,
-    hireDateFilter,
-  ]);
+  // show raw employee list (no filtering)
+  const filteredEmployees = employeeList;
 
   const handleAddEmployee = (newEmployee) => {
     setEmployeeList((prev) => [newEmployee, ...prev]);
   };
 
+  // fetch employees from API
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("http://127.0.0.1:8000/api/employees", {
+          headers: {
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        const body = await res.json();
+
+        if (!cancelled && body && Array.isArray(body.data)) {
+          setEmployeeList(body.data);
+        }
+      } catch (err) {
+        console.error("Failed to load employees:", err);
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+
   // =========================
-  // Pagination
+  // Derived counts & Pagination
   // =========================
 
-  const totalRows = employeesStatus.total;
+  const totalRows = employeeList.length;
+  const activeCount = employeeList.filter((e) => e.employee_profile?.status === "active").length;
+  const pendingCount = employeeList.filter((e) => e.employee_profile?.status && e.employee_profile?.status !== "active").length;
 
   const totalPages = Math.max(
     1,
@@ -96,13 +84,7 @@ function EmployeesPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [
-    search,
-    statusFilter,
-    roleFilter,
-    hireDateFilter,
-    pageSize,
-  ]);
+  }, [pageSize]);
 
   // =========================
   // Keep current page valid
@@ -172,8 +154,8 @@ function EmployeesPage() {
 
       <EmployeesHeader
         totalRows={totalRows}
-        activeCount={employeesStatus.active}
-        pendingCount={employeesStatus.pending}
+        activeCount={activeCount}
+        pendingCount={pendingCount}
         onAddEmployee={() => setShowAddEmployee(true)}
       />
 

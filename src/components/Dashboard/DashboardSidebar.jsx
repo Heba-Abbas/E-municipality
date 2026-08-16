@@ -92,8 +92,42 @@ function DashboardSidebar() {
         {/* روابط القائمة الجانبية */}
         <nav className="mt-3 flex gap-2 overflow-x-auto pb-2 lg:mt-6 lg:flex-col lg:gap-2 lg:overflow-visible lg:pb-0">
           {sidebarItems.map((item) => {
-            
             const IconComponent = iconMap[item.icon]
+
+            // if the item has children render parent + nested links
+            if (Array.isArray(item.children) && item.children.length > 0) {
+              return (
+                <div key={item.path} className="w-full">
+                  <div className="flex items-center gap-3 rounded-xl border px-3 py-3 text-sm font-medium text-slate-700 dark:text-slate-200">
+                    <span className={item.label === 'لوحة التحكم' ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600/90 dark:text-emerald-300/90'}>
+                      {IconComponent && <IconComponent className="h-5 w-5" strokeWidth={1.8} />}
+                    </span>
+
+                    <span>{item.label}</span>
+                  </div>
+
+                  <div className="mt-2 flex flex-col gap-2 pr-6">
+                    {item.children.map((child) => (
+                      <NavLink
+                        key={child.path}
+                        to={child.path}
+                        className={({ isActive }) =>
+                          [
+                            'flex items-center gap-3 rounded-xl border px-3 py-2 text-sm font-medium transition-colors ml-6',
+                            isActive
+                              ? 'border-emerald-500/30 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300'
+                              : 'border-slate-200/80 bg-slate-50/80 text-slate-700 hover:bg-slate-100 dark:border-white/5 dark:bg-[#121b23] dark:text-slate-200 dark:hover:bg-white/5'
+                          ].join(' ')
+                        }
+                      >
+                        <span className="w-3" />
+                        <span>{child.label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              )
+            }
 
             return (
               <NavLink
