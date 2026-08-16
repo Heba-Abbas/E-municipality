@@ -20,11 +20,6 @@ export const dashboardStats = [
     label: 'الفعاليات',
     value: '12',
     icon: 'Events'
-  },
-  {
-    label: 'التقارير',
-    value: '7',
-    icon: 'reports'
   }
 ]
 

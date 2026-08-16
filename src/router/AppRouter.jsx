@@ -18,6 +18,7 @@ import UnifiedComplaintsPage from "../pages/UnifiedComplaintsPage";
 import UnifiedComplaintDetailsPage from "../pages/UnifiedComplaintDetailsPage";
 import DepartmentComplaintsPage from "../pages/DepartmentComplaintsPage";
 import DepartmentComplaintDetailsPage from "../pages/DepartmentComplaintDetailsPage";
+import ProfilePage from "../pages/ProfilePage";
 
 function AppRouter() {
   return (
@@ -49,6 +50,9 @@ function AppRouter() {
 
         <Route path="/dashboard/complaints/department" element={<DepartmentComplaintsPage />} />
         <Route path="/dashboard/complaints/department/:id" element={<DepartmentComplaintDetailsPage />} />
+
+        {/* الملف الشخصي والإعدادات */}
+        <Route path="/dashboard/profile" element={<ProfilePage />} />
       </Route>
     </Routes>
   )
