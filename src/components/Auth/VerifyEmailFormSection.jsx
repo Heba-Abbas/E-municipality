@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 
 import FormHeader from "./FormHeader";
 import EmailInput from "./EmailInput";
@@ -51,17 +51,11 @@ function VerifyEmailFormSection() {
     try {
       const otp = formData.code.trim();
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/auth/verify-reset-otp",
+      const response = await api.post(
+        "/auth/verify-reset-otp",
         {
           email: email,
           otp: otp,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
         }
       );
 

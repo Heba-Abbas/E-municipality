@@ -16,12 +16,13 @@ import TechnicalOfficeRequestsPage from "../pages/TechnicalOfficeRequestsPage";
 import EngineeringOfficeRequestsPage from "../pages/EngineeringOfficeRequestsPage";
 import MayorRequestsPage from "../pages/MayorRequestsPage";
 import FieldInspectorPage from "./../pages/FieldInspectorPage";
+import ChangeTemporaryPasswordPage from "./../pages/ChangeTemporaryPasswordPage";
 import ComplaintReportsPage from "../pages/ComplaintReportsPage";
 import ComplaintReportDetailsPage from "../pages/ComplaintReportDetailsPage";
 import UnifiedComplaintsPage from "../pages/UnifiedComplaintsPage";
 import UnifiedComplaintDetailsPage from "../pages/UnifiedComplaintDetailsPage";
-import DepartmentComplaintsPage from "../pages/DepartmentComplaintsPage";
 import DepartmentComplaintDetailsPage from "../pages/DepartmentComplaintDetailsPage";
+import DepartmentComplaintsPage from "../pages/DepartmentComplaintsPage";
 import ProfilePage from "../pages/ProfilePage";
 
 function AppRouter() {
@@ -50,6 +51,7 @@ function AppRouter() {
         <Route path="/dashboard/mayor/service-requests" element={<MayorRequestsPage />} />
         <Route path="/dashboard/field-inspector/service-requests" element={<FieldInspectorPage />} />
         <Route path="/dashboard/admin/service-requests" element={<ServiceTypesPage />} />
+        <Route path="/change-temporary-password" element={<ChangeTemporaryPasswordPage />} />
 
         {/* الشكاوى — المكتب الفني */}
         <Route path="/dashboard/complaints/reports" element={<ComplaintReportsPage />} />

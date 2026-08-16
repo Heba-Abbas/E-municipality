@@ -7,7 +7,7 @@ function ServiceTypeForm({ onSuccess, onCancel }) {
     municipality_id: "",
     name: "",
     description: "",
-    document_template_key: "",
+    document_template_key: "standard",
     is_active: true,
   });
  const [municipalities, setMunicipalities] = useState([]);

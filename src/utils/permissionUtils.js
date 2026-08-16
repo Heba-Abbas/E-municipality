@@ -19,6 +19,11 @@ const MANUAL_MAP = {
   'permissions.view': 'عرض الأذونات',
   'permissions.assign': 'تعيين إذن',
   'permissions.revoke': 'إلغاء إذن',
+  // service-request specific
+  'technical-office.service-requests.view': 'عرض طلبات المكتب الفني',
+  'engineering-office.service-requests.view': 'عرض طلبات المكتب الهندسي',
+  'mayor.service-requests.view': 'عرض طلبات رئيس البلدية',
+  'system-admin.service-types.manage': 'إدارة أنواع المعاملات',
   
 };
 
@@ -60,6 +65,36 @@ const TOKEN_MAP = {
   review:"مراجعة",
   technical:"فني",
   office:"مكتب",
+  attachment: 'مرفق',
+  attachments: 'المرفقات',
+  download: 'تنزيل',
+  forward: 'تحويل',
+  start: 'بدء',
+  reject: 'رفض',
+  approve_and_issue: 'الموافقة والإصدار',
+  issue: 'إصدار',
+  publish: 'نشر',
+  open: 'فتح',
+  close: 'إغلاق',
+  draft: 'مسودة',
+  index: 'قائمة',
+  list: 'قائمة',
+  show: 'عرض',
+  read: 'قراءة',
+  write: 'كتابة',
+  restore: 'استعادة',
+  admin: 'المسؤول',
+  system: 'النظام',
+  governorate: 'محافظة',
+  governorates: 'المحافظات',
+  municipality: 'بلدية',
+  municipalities: 'البلديات',
+  mayor: 'رئيس البلدية',
+  technical_office: 'المكتب الفني',
+  engineering_office: 'المكتب الهندسي',
+  system_admin: 'مدير النظام',
+  service_request: 'طلب خدمة',
+  service_requests: 'طلبات الخدمة',
   
 
 };
@@ -82,15 +117,89 @@ export function translatePermissionName(name) {
     return TOKEN_MAP[tokens[0]];
   }
 
-  // build a phrase by translating tokens
-  const translated = tokens.map((t) => TOKEN_MAP[t] || t);
+  // translate tokens where possible
+  const translatedTokens = tokens.map((t) => TOKEN_MAP[t] || null);
 
-  // prefer "action object" structure if possible
-  if (tokens.length >= 2) {
-    return `${translated[0]} ${translated.slice(1).join(' ')}`;
+  // If entire phrase is known (no nulls), try to produce a natural Arabic phrase
+  const hasUnknown = translatedTokens.some((t) => t === null);
+
+  // Helper: join object tokens into a natural phrase
+  const joinObject = (objTokens) => {
+    // common compound patterns
+    const t = objTokens.map((tok) => TOKEN_MAP[tok] || tok);
+
+    // handle service requests -> 'طلبات الخدمة'
+    if (objTokens.includes('service') && objTokens.includes('requests')) {
+      return 'طلبات الخدمة';
+    }
+
+    // handle service types
+    if (objTokens.includes('service') && objTokens.includes('types')) {
+      return 'أنواع المعاملات';
+    }
+
+    // handle technical/engineering office
+    if (objTokens.includes('technical') && objTokens.includes('office')) {
+      return 'طلبات المكتب الفني';
+    }
+
+    if (objTokens.includes('engineering') && objTokens.includes('office')) {
+      return 'طلبات المكتب الهندسي';
+    }
+
+    // default: join translated tokens
+    return t.join(' ');
+  };
+
+  // Determine if last token is an action (view/create/update/etc.)
+  const actionCandidates = new Set([
+    'view',
+    'create',
+    'store',
+    'update',
+    'edit',
+    'delete',
+    'remove',
+    'manage',
+    'assign',
+    'revoke',
+    'approve',
+    'reject',
+    'forward',
+    'start',
+    'execute',
+    'download',
+    'open',
+    'approve_and_issue',
+    'issue',
+    'publish',
+  ]);
+
+  const lastToken = tokens[tokens.length - 1];
+
+  if (tokens.length >= 2 && actionCandidates.has(lastToken)) {
+    const action = TOKEN_MAP[lastToken] || lastToken;
+    const objectTokens = tokens.slice(0, -1);
+
+    const objectPhrase = joinObject(objectTokens);
+
+    // If any object token was unknown, try fallback to manual map for full name
+    const manualKey = objectTokens.join('.') + '.' + lastToken;
+    if (MANUAL_MAP[manualKey]) return MANUAL_MAP[manualKey];
+
+    // Return 'action object' with Arabic action first
+    return `${action} ${objectPhrase}`;
   }
 
-  return translated.join(' ');
+  // If no clear action at end, but all tokens translated, join them
+  if (!hasUnknown) {
+    return translatedTokens.join(' ');
+  }
+
+  // As a last resort, try to translate each token where possible and join
+  const fallback = tokens.map((t) => TOKEN_MAP[t] || t).join(' ');
+
+  return fallback;
 }
 
 export default translatePermissionName;

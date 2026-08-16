@@ -254,7 +254,7 @@ function EmployeesPage() {
       {/* =========================
           Filters
       ========================= */}
-
+{/* 
       <EmployeeFilters
         search={search}
         setSearch={setSearch}
@@ -265,7 +265,7 @@ function EmployeesPage() {
         hireDateFilter={hireDateFilter}
         setHireDateFilter={setHireDateFilter}
         onResetFilters={handleResetFilters}
-      />
+      /> */}
 
       {/* =========================
           Error Message

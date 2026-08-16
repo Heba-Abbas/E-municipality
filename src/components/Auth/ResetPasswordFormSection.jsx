@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 
 import FormHeader from "./FormHeader";
 import EmailInput from "./EmailInput";
@@ -41,16 +41,10 @@ function ResetPasswordFormSection() {
     try {
       const email = formData.email.trim();
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/auth/forgot-password",
+      const response = await api.post(
+        "/auth/forgot-password",
         {
           email: email,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
         }
       );
 

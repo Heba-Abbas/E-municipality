@@ -6,63 +6,36 @@ import {
 
 import ThemeToggle from "./../ThemeToggle";
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function DashboardTopbar() {
   const [mustChange, setMustChange] = useState(false);
+
   const navigate = useNavigate();
-  const location = useLocation();
 
   // =====================================================
-  // قراءة حالة المستخدم من localStorage
+  // قراءة حالة كلمة المرور
   // =====================================================
 
   const checkPasswordStatus = () => {
     try {
-      const rawUser = localStorage.getItem("user");
-
-      if (!rawUser) {
-        setMustChange(false);
-        return;
-      }
-
-      const parsedUser = JSON.parse(rawUser);
-
-      /*
-       * الـ API يرجع:
-       *
-       * data: {
-       *   token: "...",
-       *   requires_password_change: true,
-       *   user: {
-       *      ...
-       *   }
-       * }
-       *
-       * لذلك يجب قراءة requires_password_change
-       * من data وليس من data.user.
-       */
-
-      const requiresPasswordChange =
-        parsedUser?.data?.requires_password_change ??
-        parsedUser?.requires_password_change ??
-        parsedUser?.user?.requires_password_change ??
-        false;
+      const status = localStorage.getItem(
+        "requires_password_change"
+      );
 
       const must =
-        requiresPasswordChange === true ||
-        requiresPasswordChange === 1 ||
-        requiresPasswordChange === "1";
+        status === "1" ||
+        status === "true";
 
       setMustChange(must);
 
       console.log(
-        "requires_password_change:",
-        requiresPasswordChange
+        "Password Change Required:",
+        must
       );
     } catch (error) {
       console.error(
-        "Failed to read user password status:",
+        "Failed to read password status:",
         error
       );
 
@@ -71,51 +44,12 @@ function DashboardTopbar() {
   };
 
   // =====================================================
-  // Initial check
+  // Initial
   // =====================================================
 
   useEffect(() => {
     checkPasswordStatus();
   }, []);
-
-  // =====================================================
-  // If user visits /dashboard and requires password change,
-  // persist a flag so the reset button is shown thereafter
-  // =====================================================
-
-  useEffect(() => {
-    try {
-      const rawUser = localStorage.getItem("user");
-
-      if (!rawUser) return;
-
-      const parsedUser = JSON.parse(rawUser);
-
-      const requiresPasswordChange =
-        parsedUser?.data?.requires_password_change ??
-        parsedUser?.requires_password_change ??
-        parsedUser?.user?.requires_password_change ??
-        false;
-
-      const must = requiresPasswordChange === true || requiresPasswordChange === 1 || requiresPasswordChange === "1";
-
-      // when entering /dashboard for the first time, persist the flag
-      if (location && location.pathname === "/dashboard" && must) {
-        try {
-          localStorage.setItem("show_reset_button", "1");
-        } catch (e) {
-          /* ignore */
-        }
-      }
-
-      // if the flag exists, ensure the UI shows the button
-      const forced = localStorage.getItem("show_reset_button") === "1";
-
-      if (forced) setMustChange(true);
-    } catch (err) {
-      /* ignore parsing errors */
-    }
-  }, [location]);
 
   // =====================================================
   // مراقبة تغييرات localStorage
@@ -140,11 +74,33 @@ function DashboardTopbar() {
   }, []);
 
   // =====================================================
-  // الانتقال إلى صفحة تغيير كلمة المرور
+  // مراقبة الحدث داخل نفس التبويب
+  // =====================================================
+
+  useEffect(() => {
+    const handlePasswordChanged = () => {
+      checkPasswordStatus();
+    };
+
+    window.addEventListener(
+      "passwordChanged",
+      handlePasswordChanged
+    );
+
+    return () => {
+      window.removeEventListener(
+        "passwordChanged",
+        handlePasswordChanged
+      );
+    };
+  }, []);
+
+  // =====================================================
+  // Change Password
   // =====================================================
 
   const handleChangePassword = () => {
-    navigate("/forgot-password");
+    navigate("/change-temporary-password");
   };
 
   return (
@@ -175,7 +131,75 @@ function DashboardTopbar() {
         ===================================================== */}
 
         <div className="flex items-center gap-3">
-          {/* عنوان الصفحة يمكن وضعه هنا لاحقاً */}
+          {mustChange && (
+        <div
+          className="
+            mt-3
+            flex
+            items-center
+            justify-between
+            gap-3
+            rounded-xl
+            border
+            border-red-200
+            bg-red-50
+            px-3
+            py-2.5
+            text-right
+            dark:border-red-500/20
+            dark:bg-red-500/10
+          "
+        >
+          <div className="flex items-center gap-2">
+
+            <AlertCircle
+              className="
+                h-4
+                w-2
+                shrink-0
+                text-red-600
+                dark:text-red-400
+              "
+              strokeWidth={2}
+            />
+
+            <p
+              className="
+              
+                text-xs
+                font-medium
+                text-red-700
+                dark:text-red-300
+              "
+            >
+              يجب تغيير كلمة المرور التي تم إعطاؤك
+              إياها من قبل الإدارة قبل أن تتمكن من
+              استخدام النظام.
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            onClick={handleChangePassword}
+            className="
+              shrink-0
+              text-xs
+              font-semibold
+              text-red-700
+              underline
+              underline-offset-2
+              transition
+              hover:text-red-900
+              dark:text-red-300
+              dark:hover:text-red-200
+            "
+          >
+            تغيير الآن
+          </button>
+
+        </div>
+      )}
         </div>
 
         {/* =====================================================
@@ -184,12 +208,11 @@ function DashboardTopbar() {
 
         <div className="flex items-center gap-3 sm:gap-4">
 
-          {/* =====================================================
-              زر تغيير كلمة المرور
-              يظهر فقط إذا كان المستخدم مجبراً على تغييرها
-          ===================================================== */}
+          {/* =================================================
+              تغيير كلمة المرور
+          ================================================= */}
 
-          {mustChange && (
+          {/* {mustChange && (
             <>
               <button
                 type="button"
@@ -245,11 +268,11 @@ function DashboardTopbar() {
 
               <div className="h-5 w-px bg-slate-200 dark:bg-white/10" />
             </>
-          )}
+          )} */}
 
-          {/* =====================================================
-              Theme Toggle
-          ===================================================== */}
+          {/* =================================================
+              Theme
+          ================================================= */}
 
           <div className="flex items-center">
             <ThemeToggle />
@@ -257,28 +280,10 @@ function DashboardTopbar() {
 
           <div className="h-5 w-px bg-slate-200 dark:bg-white/10" />
 
-          {/* =====================================================
-              الإشعارات
-          ===================================================== */}
+          
 
-          <button
-            type="button"
-            className="
-              text-slate-600
-              transition
-              hover:text-slate-900
-              dark:text-slate-300
-              dark:hover:text-white
-            "
-            title="الإشعارات"
-          >
-            <Bell
-              size={18}
-              strokeWidth={1.8}
-            />
-          </button>
 
-          <div className="h-5 w-px bg-slate-200 dark:bg-white/10" />
+          
 
           {/* =====================================================
               معلومات المستخدم — تفتح الملف الشخصي والإعدادات
@@ -334,77 +339,9 @@ function DashboardTopbar() {
         </div>
       </div>
 
-      {/* =====================================================
-          رسالة التنبيه
-      ===================================================== */}
+      
 
-      {mustChange && (
-        <div
-          className="
-            mt-3
-            flex
-            items-center
-            justify-between
-            gap-3
-            rounded-xl
-            border
-            border-red-200
-            bg-red-50
-            px-3
-            py-2.5
-            text-right
-            dark:border-red-500/20
-            dark:bg-red-500/10
-          "
-        >
-          <div className="flex items-center gap-2">
-
-            <AlertCircle
-              className="
-                h-4
-                w-4
-                shrink-0
-                text-red-600
-                dark:text-red-400
-              "
-              strokeWidth={2}
-            />
-
-            <p
-              className="
-                text-xs
-                font-medium
-                text-red-700
-                dark:text-red-300
-              "
-            >
-              يجب تغيير كلمة المرور التي تم إعطاؤك إياها
-              من قبل الإدارة قبل أن تتمكن من استخدام النظام.
-            </p>
-
-          </div>
-
-          <button
-            type="button"
-            onClick={handleChangePassword}
-            className="
-              shrink-0
-              text-xs
-              font-semibold
-              text-red-700
-              underline
-              underline-offset-2
-              transition
-              hover:text-red-900
-              dark:text-red-300
-              dark:hover:text-red-200
-            "
-          >
-            تغيير الآن
-          </button>
-
-        </div>
-      )}
+      
     </header>
   );
 }
