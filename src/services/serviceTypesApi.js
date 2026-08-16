@@ -20,15 +20,32 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// =====================================================
 // جلب البلديات
+// =====================================================
+
 export const getMunicipalities = async () => {
   const response = await api.get("/admin/municipalities");
 
-  // مهم: نرجع data نفسها
   return response.data;
 };
 
+// =====================================================
+// جلب أنواع المعاملات
+// =====================================================
+
+export const getServiceTypes = async (page = 1) => {
+  const response = await api.get(
+    `/system-admin/service-types?page=${page}`
+  );
+
+  return response.data;
+};
+
+// =====================================================
 // إنشاء نوع معاملة
+// =====================================================
+
 export const createServiceType = async (payload) => {
   const response = await api.post(
     "/system-admin/service-types",
@@ -38,8 +55,14 @@ export const createServiceType = async (payload) => {
   return response.data;
 };
 
+// =====================================================
 // إنشاء نسخة من نوع المعاملة
-export const createServiceVersion = async (serviceTypeId, fields) => {
+// =====================================================
+
+export const createServiceVersion = async (
+  serviceTypeId,
+  fields
+) => {
   const formData = new FormData();
 
   fields.forEach((field, index) => {
@@ -63,19 +86,23 @@ export const createServiceVersion = async (serviceTypeId, fields) => {
       field.is_required ? "1" : "0"
     );
 
-    field.options_json.forEach((option, optionIndex) => {
-      formData.append(
-        `fields[${index}][options_json][${optionIndex}]`,
-        option
-      );
-    });
+    field.options_json.forEach(
+      (option, optionIndex) => {
+        formData.append(
+          `fields[${index}][options_json][${optionIndex}]`,
+          option
+        );
+      }
+    );
 
-    field.validation_json.forEach((rule, ruleIndex) => {
-      formData.append(
-        `fields[${index}][validation_json][${ruleIndex}]`,
-        rule
-      );
-    });
+    field.validation_json.forEach(
+      (rule, ruleIndex) => {
+        formData.append(
+          `fields[${index}][validation_json][${ruleIndex}]`,
+          rule
+        );
+      }
+    );
 
     if (field.condition_json) {
       formData.append(
