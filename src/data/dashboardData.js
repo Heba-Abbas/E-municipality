@@ -97,6 +97,8 @@ export const sidebarItems = [
   { label: 'الأخبار', path: '/dashboard/news', icon: 'news' },
   { label: 'الفعاليات', path: '/dashboard/events', icon: 'events' },
   { label: 'الصلاحيات', path: '/dashboard/roles-permissions', icon: 'roles' },
+  { label: 'الشكاوى', path: '/dashboard/complaints/reports', icon: 'complaints' },
+  { label: 'شكاوى قسمي', path: '/dashboard/complaints/department', icon: 'departmentComplaints' },
   
   
   

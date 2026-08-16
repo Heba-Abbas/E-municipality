@@ -17,6 +17,7 @@ import {
   Key,
   Landmark,
   ClipboardList,
+  AlertTriangle,
   LogOut,
   Loader2,
 } from 'lucide-react'
@@ -32,6 +33,8 @@ const iconMap = {
   roles: Key,
   municipalities: Landmark,
   logs: ClipboardList,
+  complaints: AlertTriangle,
+  departmentComplaints: ClipboardList,
 }
 
 function DashboardSidebar() {

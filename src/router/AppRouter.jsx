@@ -12,6 +12,12 @@ import ComingSoonPage from '../pages/ComingSoonPage'
 import RolesPermissionsPage from "./../pages/RolesPermissionsPage";
 import MunicipalitiesPage from './../pages/MunicipalitiesPage';
 import ServiceTypesPage from "../pages/ServiceTypesPage";
+import ComplaintReportsPage from "../pages/ComplaintReportsPage";
+import ComplaintReportDetailsPage from "../pages/ComplaintReportDetailsPage";
+import UnifiedComplaintsPage from "../pages/UnifiedComplaintsPage";
+import UnifiedComplaintDetailsPage from "../pages/UnifiedComplaintDetailsPage";
+import DepartmentComplaintsPage from "../pages/DepartmentComplaintsPage";
+import DepartmentComplaintDetailsPage from "../pages/DepartmentComplaintDetailsPage";
 
 function AppRouter() {
   return (
@@ -35,6 +41,14 @@ function AppRouter() {
         <Route path="/dashboard/municipalities" element={<MunicipalitiesPage />} />
         <Route path="/dashboard/roles-permissions" element={<RolesPermissionsPage />}
 />
+
+        <Route path="/dashboard/complaints/reports" element={<ComplaintReportsPage />} />
+        <Route path="/dashboard/complaints/reports/:id" element={<ComplaintReportDetailsPage />} />
+        <Route path="/dashboard/complaints/unified" element={<UnifiedComplaintsPage />} />
+        <Route path="/dashboard/complaints/unified/:id" element={<UnifiedComplaintDetailsPage />} />
+
+        <Route path="/dashboard/complaints/department" element={<DepartmentComplaintsPage />} />
+        <Route path="/dashboard/complaints/department/:id" element={<DepartmentComplaintDetailsPage />} />
       </Route>
     </Routes>
   )
