@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 
 import FormHeader from "./FormHeader";
 import EmailInput from "./EmailInput";
@@ -19,18 +19,23 @@ function FormSection() {
 
   const navigate = useNavigate();
 
+  // =====================================================
   // Validation
+  // =====================================================
+
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData.email.trim()) {
-      newErrors.email = "اسم المستخدم أو البريد الإلكتروني مطلوب";
+      newErrors.email =
+        "اسم المستخدم أو البريد الإلكتروني مطلوب";
     }
 
     if (!formData.password.trim()) {
       newErrors.password = "كلمة السر مطلوبة";
     } else if (formData.password.length < 6) {
-      newErrors.password = "كلمة السر يجب أن تكون 6 أحرف على الأقل";
+      newErrors.password =
+        "كلمة السر يجب أن تكون 6 أحرف على الأقل";
     }
 
     setErrors(newErrors);
@@ -38,7 +43,10 @@ function FormSection() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // =====================================================
   // Handle Submit
+  // =====================================================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -48,49 +56,114 @@ function FormSection() {
     setErrors({});
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/auth/login",
+      const response = await api.post(
+        "/auth/login",
         {
           login: formData.email.trim(),
           password: formData.password,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
         }
       );
 
       console.log("Login Success:", response.data);
 
-      // الـ API يرجع البيانات داخل data
-      const loginData = response.data.data;
+      // =================================================
+      // بيانات تسجيل الدخول
+      // =================================================
+
+      const loginData = response.data?.data;
+
+      if (!loginData) {
+        throw new Error(
+          "استجابة تسجيل الدخول غير صحيحة"
+        );
+      }
 
       const token = loginData.token;
       const user = loginData.user;
 
+      // =================================================
+      // requires_password_change
+      //
+      // مهم:
+      // هذه القيمة موجودة ضمن loginData حسب استجابة API
+      // وليس بالضرورة ضمن user
+      // =================================================
+
+      const requiresPasswordChange =
+        loginData.requires_password_change === true ||
+        loginData.requires_password_change === 1 ||
+        loginData.requires_password_change === "1";
+
+      console.log(
+        "Requires Password Change:",
+        requiresPasswordChange
+      );
+
+      // =================================================
       // حفظ التوكن
+      // =================================================
+
       localStorage.setItem("token", token);
 
-      // حفظ بيانات المستخدم
-      localStorage.setItem("user", JSON.stringify(user));
+      // =================================================
+      // حفظ المستخدم
+      // =================================================
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
+      // =================================================
+      // حفظ حالة تغيير كلمة المرور
+      // =================================================
+
+      localStorage.setItem(
+        "requires_password_change",
+        requiresPasswordChange ? "1" : "0"
+      );
+
+      // =================================================
+      // تنظيف أي flag قديم
+      // =================================================
+
+      if (!requiresPasswordChange) {
+        localStorage.removeItem(
+          "show_reset_button"
+        );
+      }
 
       console.log("Token:", token);
       console.log("User:", user);
+      console.log(
+        "requires_password_change:",
+        requiresPasswordChange
+      );
 
+      // =================================================
       // الانتقال إلى لوحة التحكم
+      // =================================================
+
       navigate("/dashboard");
     } catch (error) {
       console.error("Login Error:", error);
 
       if (error.response) {
-        console.log("Status:", error.response.status);
-        console.log("Response:", error.response.data);
+        console.log(
+          "Status:",
+          error.response.status
+        );
 
-        // أخطاء Validation من Laravel
+        console.log(
+          "Response:",
+          error.response.data
+        );
+
+        // Laravel Validation
         if (error.response.status === 422) {
-          setErrors(error.response.data.errors || {});
+          setErrors(
+            error.response.data?.errors || {}
+          );
         } else {
           alert(
             error.response.data?.message ||

@@ -22,7 +22,7 @@ function PermissionItem({
         </p>
 
         <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-          Permission #{permission.id}
+          الإذن رقم {permission.id}
         </p>
       </div>
 

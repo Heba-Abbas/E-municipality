@@ -16,6 +16,7 @@ import TechnicalOfficeRequestsPage from "../pages/TechnicalOfficeRequestsPage";
 import EngineeringOfficeRequestsPage from "../pages/EngineeringOfficeRequestsPage";
 import MayorRequestsPage from "../pages/MayorRequestsPage";
 import FieldInspectorPage from "./../pages/FieldInspectorPage";
+import ChangeTemporaryPasswordPage from "./../pages/ChangeTemporaryPasswordPage";
 
 function AppRouter() {
   return (
@@ -43,6 +44,7 @@ function AppRouter() {
         <Route path="/dashboard/mayor/service-requests" element={<MayorRequestsPage />} />
         <Route path="/dashboard/field-inspector/service-requests" element={<FieldInspectorPage />} />
         <Route path="/dashboard/admin/service-requests" element={<ServiceTypesPage />} />
+        <Route path="/change-temporary-password" element={<ChangeTemporaryPasswordPage />} />
       </Route>
     </Routes>
   )
