@@ -98,6 +98,7 @@ export const sidebarItems = [
       { label: 'طلبات المكتب الهندسي', path: '/dashboard/engineering-office/service-requests' },
       { label: 'طلبات المكتب التقني', path: '/dashboard/technical-office/service-requests' },
       { label: 'طلبات رئيس البلدية', path: '/dashboard/mayor/service-requests' },
+      { label: 'طلبات  المفتش الميداني', path: '/dashboard/field-inspector/service-requests' },
       { label: 'طلبات مدير النظام', path: '/dashboard/admin/service-requests' },
     ],
   },

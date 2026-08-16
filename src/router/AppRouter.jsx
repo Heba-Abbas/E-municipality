@@ -15,6 +15,7 @@ import ServiceTypesPage from "../pages/ServiceTypesPage";
 import TechnicalOfficeRequestsPage from "../pages/TechnicalOfficeRequestsPage";
 import EngineeringOfficeRequestsPage from "../pages/EngineeringOfficeRequestsPage";
 import MayorRequestsPage from "../pages/MayorRequestsPage";
+import FieldInspectorPage from "./../pages/FieldInspectorPage";
 
 function AppRouter() {
   return (
@@ -40,6 +41,7 @@ function AppRouter() {
         <Route path="/dashboard/technical-office/service-requests" element={<TechnicalOfficeRequestsPage />}/>
         <Route path="/dashboard/engineering-office/service-requests" element={<EngineeringOfficeRequestsPage />}/>
         <Route path="/dashboard/mayor/service-requests" element={<MayorRequestsPage />} />
+        <Route path="/dashboard/field-inspector/service-requests" element={<FieldInspectorPage />} />
         <Route path="/dashboard/admin/service-requests" element={<ServiceTypesPage />} />
       </Route>
     </Routes>

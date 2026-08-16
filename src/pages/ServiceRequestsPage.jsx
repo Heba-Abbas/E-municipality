@@ -51,23 +51,7 @@ function ServiceRequestsPage({
 
   /*
   =========================================================
-  FIX:
-  حالات نافذة تحديد expires_at لرئيس البلدية
-  =========================================================
-
-  عند الضغط على "الموافقة وإصدار الوثيقة"
-  لا نرسل الطلب مباشرة.
-
-  أولاً تظهر نافذة تطلب من رئيس البلدية
-  تحديد تاريخ انتهاء الوثيقة.
-
-  بعدها يتم إرسال:
-
-  {
-    expires_at: "YYYY-MM-DD"
-  }
-
-  للـ API.
+  نافذة تحديد expires_at لرئيس البلدية
   =========================================================
   */
 
@@ -208,11 +192,8 @@ function ServiceRequestsPage({
 
       /*
       =====================================================
-      FIX:
-      بعد نجاح العملية نعيد جلب البيانات من Backend.
-
-      هذا يضمن أن الحالة الموجودة في الجدول
-      هي الحالة الحقيقية الموجودة في قاعدة البيانات.
+      بعد نجاح العملية نعيد جلب البيانات
+      للعمليات العادية فقط.
       =====================================================
       */
 
@@ -241,20 +222,7 @@ function ServiceRequestsPage({
 
   /*
   =========================================================
-  FIX:
   فتح نافذة الموافقة والإصدار
-  =========================================================
-
-  سابقاً:
-
-  onApproveAndIssue(request.id)
-
-  كان يستدعي API مباشرة بدون expires_at.
-
-  الآن:
-  1. نحفظ id الطلب.
-  2. نفرغ التاريخ السابق.
-  3. نفتح نافذة اختيار تاريخ الانتهاء.
   =========================================================
   */
 
@@ -267,7 +235,6 @@ function ServiceRequestsPage({
 
   /*
   =========================================================
-  FIX:
   إغلاق نافذة الموافقة
   =========================================================
   */
@@ -282,8 +249,7 @@ function ServiceRequestsPage({
 
   /*
   =========================================================
-  FIX:
-  تنفيذ approve-and-issue مع expires_at
+  تنفيذ approve-and-issue
   =========================================================
   */
 
@@ -292,17 +258,6 @@ function ServiceRequestsPage({
       setError("رقم طلب الخدمة غير موجود");
       return;
     }
-
-    /*
-    expiresAt قادم من input type="date"
-    وبالتالي شكله:
-
-    YYYY-MM-DD
-
-    مثال:
-
-    2026-08-20
-    */
 
     if (!expiresAt) {
       setError(
@@ -318,17 +273,7 @@ function ServiceRequestsPage({
 
       /*
       =====================================================
-      FIX الأساسي:
-
-      إرسال:
-
-      {
-        expires_at: expiresAt
-      }
-
-      إلى:
-
-      /api/mayor/service-requests/{id}/approve-and-issue
+      إرسال التاريخ بصيغة YYYY-MM-DD
       =====================================================
       */
 
@@ -349,17 +294,78 @@ function ServiceRequestsPage({
       }
 
       /*
-      بعد النجاح:
-      - نغلق النافذة
-      - نفرغ البيانات
-      - نعيد جلب الطلبات
+      =====================================================
+      IMPORTANT
+      =====================================================
+
+      الـ API يرجع الطلب الكامل بعد الموافقة:
+
+      response.data = {
+        id,
+        citizen,
+        service_type,
+        data,
+        current_status,
+        attachments,
+        submitted_at,
+        document,
+        created_at,
+        updated_at
+      }
+
+      لا نعيد loadRequests هنا.
+
+      السبب:
+      GET /mayor/service-requests غالباً يعرض فقط
+      الطلبات التي بانتظار موافقة رئيس البلدية.
+
+      لذلك لو عملنا loadRequests() بعد الموافقة
+      سيختفي الطلب من الجدول.
+
+      بدلاً من ذلك نضع response.data مكان الطلب
+      القديم مباشرة.
+      =====================================================
+      */
+
+      const approvedRequest = response?.data;
+
+      if (approvedRequest?.id) {
+        setRequests((prevRequests) =>
+          prevRequests.map((request) =>
+            request.id === approvedRequest.id
+              ? approvedRequest
+              : request
+          )
+        );
+
+        /*
+        ===================================================
+        إذا كانت نافذة تفاصيل الطلب مفتوحة،
+        نحدثها أيضاً بالبيانات الجديدة.
+
+        وبذلك تظهر document مباشرة.
+        ===================================================
+        */
+
+        if (
+          selectedRequest?.id ===
+          approvedRequest.id
+        ) {
+          setSelectedRequest(
+            approvedRequest
+          );
+        }
+      }
+
+      /*
+      =====================================================
+      إغلاق نافذة الموافقة
+      =====================================================
       */
 
       setShowApproveModal(false);
       setApproveRequestId(null);
       setExpiresAt("");
-
-      await loadRequests();
     } catch (err) {
       console.error(
         "Approve And Issue Error:",
@@ -368,9 +374,7 @@ function ServiceRequestsPage({
 
       /*
       =====================================================
-      FIX:
-      عرض رسالة Laravel الحقيقية،
-      بما فيها أخطاء validation مثل 422.
+      عرض أخطاء Laravel الحقيقية
       =====================================================
       */
 
@@ -444,7 +448,7 @@ function ServiceRequestsPage({
 
   /*
   =========================================================
-  تاريخ اليوم لاستخدامه كـ minimum
+  تاريخ اليوم
   =========================================================
   */
 
@@ -522,15 +526,6 @@ function ServiceRequestsPage({
                   id
                 )
               }
-
-              /*
-              =================================================
-              FIX:
-              بدلاً من استدعاء approveAndIssue مباشرة،
-              نفتح نافذة اختيار expires_at.
-              =================================================
-              */
-
               onApproveAndIssue={
                 handleOpenApproveModal
               }
@@ -564,18 +559,7 @@ function ServiceRequestsPage({
       )}
 
       {/* =====================================================
-          FIX:
           نافذة تحديد تاريخ انتهاء وثيقة الخدمة
-
-          تظهر فقط عند ضغط رئيس البلدية على:
-          "الموافقة وإصدار الوثيقة"
-
-          ويتم إرسال التاريخ بصيغة:
-
-          YYYY-MM-DD
-
-          مثال:
-          2026-08-20
       ===================================================== */}
 
       {showApproveModal && (
@@ -584,7 +568,7 @@ function ServiceRequestsPage({
             className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-white/5 dark:bg-[#0f1821]"
             dir="rtl"
           >
-            {/* Modal Header */}
+            {/* Header */}
 
             <div className="mb-5 flex items-center justify-between">
               <div>
@@ -634,10 +618,6 @@ function ServiceRequestsPage({
                       event.target.value
                     );
 
-                    /*
-                    عند اختيار تاريخ صحيح
-                    نمسح رسالة الخطأ السابقة.
-                    */
                     if (event.target.value) {
                       setError("");
                     }
@@ -669,6 +649,7 @@ function ServiceRequestsPage({
                 {isActionLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
+
                     <span>
                       جاري الإصدار...
                     </span>
@@ -695,15 +676,16 @@ function ServiceRequestsPage({
         </div>
       )}
 
-      {isActionLoading && !showApproveModal && (
-        <div className="fixed bottom-5 left-5 z-[60] flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-xl dark:border-white/10 dark:bg-[#111c26] dark:text-slate-200">
-          <Loader2 className="h-4 w-4 animate-spin text-emerald-500" />
+      {isActionLoading &&
+        !showApproveModal && (
+          <div className="fixed bottom-5 left-5 z-[60] flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-xl dark:border-white/10 dark:bg-[#111c26] dark:text-slate-200">
+            <Loader2 className="h-4 w-4 animate-spin text-emerald-500" />
 
-          <span>
-            جاري تنفيذ العملية...
-          </span>
-        </div>
-      )}
+            <span>
+              جاري تنفيذ العملية...
+            </span>
+          </div>
+        )}
     </div>
   );
 }

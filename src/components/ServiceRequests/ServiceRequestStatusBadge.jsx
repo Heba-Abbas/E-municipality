@@ -13,6 +13,9 @@ const statusStyles = {
   approved:
     "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300",
 
+  approved_and_document_issued:
+    "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300",
+
   rejected:
     "bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300",
 };

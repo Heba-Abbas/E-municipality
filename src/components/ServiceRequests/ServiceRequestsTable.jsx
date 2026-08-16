@@ -37,22 +37,6 @@ function ActionButton({
 =========================================================
 تحديد حالة المراجعة للمكتب الفني
 =========================================================
-
-المشكلة السابقة:
-كنا نعرض كل أزرار المكتب الفني فقط عندما تكون الحالة
-submitted.
-
-بعد الضغط على "بدء المراجعة" تتغير الحالة إلى حالة مراجعة
-مثل:
-- in_review
-- under_review
-- reviewing
-
-وبالتالي كانت كل الأزرار تختفي.
-
-هنا دعمنا كل الاحتمالات، بالإضافة إلى فحص الاسم العربي
-في حال الـ API أعاد كود مختلف ولكن الاسم "قيد المراجعة".
-=========================================================
 */
 
 const isTechnicalReviewStatus = (status) => {
@@ -73,6 +57,20 @@ const isTechnicalReviewStatus = (status) => {
     reviewCodes.includes(code) ||
     nameAr.includes("قيد المراجعة") ||
     nameAr.includes("قيد المراجعه")
+  );
+};
+
+/*
+=========================================================
+حالة نهائية مع إصدار الوثيقة
+=========================================================
+*/
+
+const isApprovedAndDocumentIssued = (status) => {
+  if (!status) return false;
+
+  return (
+    status.code === "approved_and_document_issued"
   );
 };
 
@@ -134,17 +132,24 @@ function ServiceRequestsTable({
                 request.current_status
               );
 
+            const documentIssued =
+              isApprovedAndDocumentIssued(
+                request.current_status
+              );
+
             return (
               <tr
                 key={request.id}
                 className="border-b border-slate-100 bg-white transition-colors hover:bg-slate-50/80 dark:border-white/5 dark:bg-[#0d151d] dark:hover:bg-[#14202b]"
               >
                 {/* رقم الطلب */}
+
                 <td className="px-4 py-4 text-center font-medium text-slate-700 dark:text-slate-200">
                   {request.id}
                 </td>
 
                 {/* المواطن */}
+
                 <td className="px-4 py-4">
                   <div>
                     <p className="font-medium text-slate-900 dark:text-slate-100">
@@ -158,21 +163,25 @@ function ServiceRequestsTable({
                 </td>
 
                 {/* الرقم الوطني */}
+
                 <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
                   {request.citizen?.national_id || "-"}
                 </td>
 
                 {/* نوع الخدمة */}
+
                 <td className="px-4 py-4 font-medium text-slate-800 dark:text-slate-200">
                   {request.service_type?.name || "-"}
                 </td>
 
                 {/* البلدية */}
+
                 <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
                   {request.service_type?.municipality?.name || "-"}
                 </td>
 
                 {/* تاريخ الإرسال */}
+
                 <td className="whitespace-nowrap px-4 py-4 text-slate-600 dark:text-slate-300">
                   {request.submitted_at
                     ? new Date(
@@ -182,20 +191,34 @@ function ServiceRequestsTable({
                 </td>
 
                 {/* الحالة */}
+
                 <td className="px-4 py-4">
-                  <ServiceRequestStatusBadge
-                    status={request.current_status}
-                  />
+                  <div className="flex flex-col items-start gap-1.5">
+                    <ServiceRequestStatusBadge
+                      status={request.current_status}
+                    />
+
+                    {/* رقم الوثيقة بعد الإصدار */}
+
+                    {documentIssued &&
+                      request.document?.document_number && (
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {request.document.document_number}
+                        </span>
+                      )}
+                  </div>
                 </td>
 
                 {/* الإجراءات */}
+
                 <td className="px-4 py-4">
                   <div className="flex items-center justify-center gap-2">
 
                     {/* =================================================
-                        زر عرض الطلب
+                        عرض الطلب
                         يبقى موجود دائماً
                     ================================================= */}
+
                     <ActionButton
                       title="عرض الطلب"
                       onClick={() =>
@@ -216,9 +239,8 @@ function ServiceRequestsTable({
                     {role === "technical" && (
                       <>
 
-                        {/* -----------------------------------------
-                            الطلب جديد ولم تبدأ المراجعة
-                        ----------------------------------------- */}
+                        {/* الطلب جديد */}
+
                         {statusCode === "submitted" && (
                           <ActionButton
                             title="بدء المراجعة"
@@ -234,18 +256,8 @@ function ServiceRequestsTable({
                           </ActionButton>
                         )}
 
-                        {/* -----------------------------------------
-                            بعد بدء المراجعة
+                        {/* قيد المراجعة */}
 
-                            IMPORTANT:
-                            هذا هو الإصلاح الأساسي للمشكلة.
-
-                            لم نعد نشترط statusCode === submitted
-                            حتى تظهر أزرار الإرسال والرفض.
-
-                            أصبحت تظهر عندما تكون الحالة:
-                            - قيد المراجعة
-                            ----------------------------------------- */}
                         {technicalReviewing && (
                           <>
                             <ActionButton
@@ -276,24 +288,19 @@ function ServiceRequestsTable({
                           </>
                         )}
 
-                        {/* -----------------------------------------
-                            حماية إضافية:
+                        {/* حماية إضافية */}
 
-                            إذا الـ API رجع status مختلف عن
-                            in_review ولكن ما زال الطلب غير نهائي
-                            وليس submitted، نسمح للمكتب الفني
-                            بإرساله أو رفضه.
-
-                            هذا يمنع اختفاء الأزرار بسبب اختلاف
-                            اسم status code بين Backend و Frontend.
-                        ----------------------------------------- */}
                         {statusCode !== "submitted" &&
                           !technicalReviewing &&
                           statusCode &&
-                          statusCode !== "pending_engineering_approval" &&
-                          statusCode !== "pending_mayor_approval" &&
+                          statusCode !==
+                            "pending_engineering_approval" &&
+                          statusCode !==
+                            "pending_mayor_approval" &&
                           statusCode !== "rejected" &&
-                          statusCode !== "approved" && (
+                          statusCode !== "approved" &&
+                          statusCode !==
+                            "approved_and_document_issued" && (
                             <>
                               <ActionButton
                                 title="إرسال للمكتب الهندسي"
@@ -387,7 +394,7 @@ function ServiceRequestsTable({
                             onClick={() =>
                               onReject(request.id)
                             }
-                            className="border border-red-500/30 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
+                            className="border border-red-500/30 bg-red-50 text-red-700 hover:bg-red-500/10 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
                           >
                             <X
                               className="h-4 w-4"
@@ -395,6 +402,29 @@ function ServiceRequestsTable({
                             />
                           </ActionButton>
                         </>
+                      )}
+
+                    {/* =================================================
+                        الطلب تمت الموافقة عليه وإصدار الوثيقة
+                        
+                        لا توجد إجراءات إضافية.
+                        يبقى فقط زر عرض الطلب.
+                    ================================================= */}
+
+                    {role === "mayor" &&
+                      documentIssued &&
+                      request.document && (
+                        <span
+                          title="تم إصدار وثيقة الخدمة"
+                          className="inline-flex h-9 items-center gap-1 rounded-lg border border-emerald-500/20 bg-emerald-50 px-2.5 text-xs font-medium text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+                        >
+                          <FileCheck
+                            className="h-4 w-4"
+                            strokeWidth={1.8}
+                          />
+
+                          تم الإصدار
+                        </span>
                       )}
                   </div>
                 </td>

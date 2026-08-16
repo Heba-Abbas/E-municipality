@@ -1,6 +1,9 @@
-import { useState } from "react";
-import { X, Plus } from "lucide-react";
-import { employeeFilters } from "../../data/EmployeesData";
+import { useEffect, useState } from "react";
+import { X, Plus, Loader2 } from "lucide-react";
+
+import { getRoles } from "../../services/rolesPermissionsApi";
+import { getMunicipalities } from "../../services/municipalitiesApi";
+import { registerEmployee } from "../../services/employeesApi";
 
 function AddEmployeeForm({ onClose, onAddEmployee }) {
   const [formData, setFormData] = useState({
@@ -8,13 +11,70 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
     nationalId: "",
     phone: "",
     email: "",
+    password: "",
+    password_confirmation: "",
     municipalityId: "",
     hireDate: "",
     role: "",
-    status: "مفعل",
+    status: "active",
   });
 
+  const [roles, setRoles] = useState([]);
+  const [municipalities, setMunicipalities] = useState([]);
+
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
+  const [isLoadingMunicipalities, setIsLoadingMunicipalities] =
+    useState(true);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
+
+  // =====================================================
+  // جلب الأدوار والبلديات عند فتح الفورم
+  // =====================================================
+
+  useEffect(() => {
+    const loadFormData = async () => {
+      try {
+        setIsLoadingRoles(true);
+        setIsLoadingMunicipalities(true);
+
+        const [rolesResponse, municipalitiesResponse] =
+          await Promise.all([
+            getRoles(),
+            getMunicipalities(),
+          ]);
+
+        // الأدوار
+        if (rolesResponse?.success) {
+          setRoles(rolesResponse.data || []);
+        }
+
+        // البلديات
+        if (municipalitiesResponse?.success) {
+          setMunicipalities(municipalitiesResponse.data || []);
+        }
+      } catch (error) {
+        console.error("Load Add Employee Form Data Error:", error);
+
+        setSubmitError(
+          error.response?.data?.message ||
+            "تعذر تحميل بيانات الأدوار والبلديات"
+        );
+      } finally {
+        setIsLoadingRoles(false);
+        setIsLoadingMunicipalities(false);
+      }
+    };
+
+    loadFormData();
+  }, []);
+
+  // =====================================================
+  // تغيير الحقول
+  // =====================================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +88,13 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
       ...prev,
       [name]: "",
     }));
+
+    setSubmitError("");
   };
+
+  // =====================================================
+  // Validation
+  // =====================================================
 
   const validateForm = () => {
     const newErrors = {};
@@ -47,6 +113,25 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
 
     if (!formData.email.trim()) {
       newErrors.email = "البريد الإلكتروني مطلوب";
+    }
+
+    // كلمة المرور
+    if (!formData.password.trim()) {
+      newErrors.password = "كلمة المرور مطلوبة";
+    } else if (formData.password.length < 8) {
+      newErrors.password =
+        "كلمة المرور يجب أن تكون 8 محارف على الأقل";
+    }
+
+    // تأكيد كلمة المرور
+    if (!formData.password_confirmation.trim()) {
+      newErrors.password_confirmation =
+        "تأكيد كلمة المرور مطلوب";
+    } else if (
+      formData.password !== formData.password_confirmation
+    ) {
+      newErrors.password_confirmation =
+        "تأكيد كلمة المرور غير مطابق";
     }
 
     if (!formData.municipalityId) {
@@ -70,22 +155,159 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  // =====================================================
+  // إرسال الموظف للـ API
+  // =====================================================
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setSubmitError("");
 
     if (!validateForm()) {
       return;
     }
 
-    const newEmployee = {
-      id: Date.now(),
-      jobTd: `EMP-${String(Date.now()).slice(-3)}`,
-      ...formData,
-    };
+    try {
+      setIsSubmitting(true);
 
-    onAddEmployee(newEmployee);
-    onClose();
+      // =================================================
+      // Payload المطلوب من Backend
+      // تم إضافة password_confirmation لحل خطأ 422
+      // =================================================
+
+      const payload = {
+        full_name: formData.fullName.trim(),
+        national_id: formData.nationalId.trim(),
+        phone_number: formData.phone.trim(),
+        email: formData.email.trim(),
+
+        password: formData.password,
+
+        // مهم جداً:
+        // Laravel يتحقق أن هذه القيمة مطابقة لكلمة المرور
+        password_confirmation:
+          formData.password_confirmation,
+
+        municipality_id: Number(formData.municipalityId),
+        hire_date: formData.hireDate,
+        role: formData.role,
+        status: formData.status,
+      };
+
+      console.log("Register Employee Payload:", payload);
+
+      const response = await registerEmployee(payload);
+
+      console.log("Register Employee Success:", response);
+
+      if (!response?.success) {
+        throw new Error(
+          response?.message || "فشل إنشاء حساب الموظف"
+        );
+      }
+
+      // =================================================
+      // أخذ الموظف الحقيقي من Backend
+      // =================================================
+
+      const createdUser = response?.data?.user;
+      const employeeProfile = createdUser?.employee_profile;
+
+      const newEmployee = {
+        id: createdUser?.id,
+
+        jobTd: employeeProfile?.id
+          ? `EMP-${employeeProfile.id}`
+          : "-",
+
+        fullName:
+          createdUser?.full_name ||
+          formData.fullName,
+
+        nationalId:
+          employeeProfile?.national_id ||
+          formData.nationalId,
+
+        phone:
+          createdUser?.phone_number ||
+          formData.phone,
+
+        email:
+          createdUser?.email ||
+          formData.email,
+
+        municipalityId:
+          employeeProfile?.municipality_id ||
+          Number(formData.municipalityId),
+
+        hireDate:
+          employeeProfile?.hire_date ||
+          formData.hireDate,
+
+        role:
+          createdUser?.roles?.[0] ||
+          formData.role,
+
+        status:
+          employeeProfile?.status ||
+          formData.status,
+      };
+
+      // =================================================
+      // إرسال الموظف الحقيقي للصفحة الأب
+      // حتى يظهر مباشرة بجدول الموظفين
+      // =================================================
+
+      if (onAddEmployee) {
+        onAddEmployee(newEmployee);
+      }
+
+      onClose();
+    } catch (error) {
+      console.error(
+        "Register Employee Error:",
+        error
+      );
+
+      // =================================================
+      // عرض أخطاء Laravel 422
+      // =================================================
+
+      const apiErrors =
+        error.response?.data?.errors;
+
+      if (
+        apiErrors &&
+        typeof apiErrors === "object"
+      ) {
+        const formattedErrors = {};
+
+        Object.entries(apiErrors).forEach(
+          ([field, messages]) => {
+            formattedErrors[field] =
+              Array.isArray(messages)
+                ? messages[0]
+                : messages;
+          }
+        );
+
+        setErrors(formattedErrors);
+      }
+
+      setSubmitError(
+        error.response?.data?.message ||
+          error.message ||
+          "حدث خطأ أثناء إضافة الموظف"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // =====================================================
+  // Classes
+  // =====================================================
 
   const inputClass =
     "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 dark:border-white/10 dark:bg-[#121b24] dark:text-white dark:placeholder:text-slate-500";
@@ -100,7 +322,10 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 py-6 backdrop-blur-sm">
       <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1821]">
 
-        {/* Header */}
+        {/* =====================================================
+            Header
+        ===================================================== */}
+
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5 dark:border-white/10">
           <div>
             <h2 className="text-xl font-semibold text-slate-800 dark:text-white">
@@ -115,21 +340,37 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 dark:border-white/10 dark:bg-[#121b24] dark:text-slate-400 dark:hover:bg-[#17212b]"
+            disabled={isSubmitting}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-[#121b24] dark:text-slate-400 dark:hover:bg-[#17212b]"
             title="إغلاق"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Form */}
+        {/* =====================================================
+            Form
+        ===================================================== */}
+
         <form onSubmit={handleSubmit} className="p-6">
+
+          {/* API Error */}
+
+          {submitError && (
+            <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+              {submitError}
+            </div>
+          )}
 
           <div className="grid gap-5 md:grid-cols-2">
 
             {/* الاسم الكامل */}
+
             <div>
-              <label htmlFor="fullName" className={labelClass}>
+              <label
+                htmlFor="fullName"
+                className={labelClass}
+              >
                 الاسم الكامل
               </label>
 
@@ -151,8 +392,12 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
             </div>
 
             {/* الرقم الوطني */}
+
             <div>
-              <label htmlFor="nationalId" className={labelClass}>
+              <label
+                htmlFor="nationalId"
+                className={labelClass}
+              >
                 الرقم الوطني
               </label>
 
@@ -173,9 +418,13 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
               )}
             </div>
 
-            {/* رقم الهاتف */}
+            {/* الهاتف */}
+
             <div>
-              <label htmlFor="phone" className={labelClass}>
+              <label
+                htmlFor="phone"
+                className={labelClass}
+              >
                 رقم الهاتف
               </label>
 
@@ -196,9 +445,13 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
               )}
             </div>
 
-            {/* البريد الإلكتروني */}
+            {/* البريد */}
+
             <div>
-              <label htmlFor="email" className={labelClass}>
+              <label
+                htmlFor="email"
+                className={labelClass}
+              >
                 البريد الإلكتروني
               </label>
 
@@ -219,9 +472,71 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
               )}
             </div>
 
-            {/* البلدية */}
+            {/* كلمة المرور */}
+
             <div>
-              <label htmlFor="municipalityId" className={labelClass}>
+              <label
+                htmlFor="password"
+                className={labelClass}
+              >
+                كلمة المرور
+              </label>
+
+              <input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="أدخل كلمة المرور"
+                className={inputClass}
+              />
+
+              {errors.password && (
+                <p className="mt-1.5 text-xs text-red-500">
+                  {errors.password}
+                </p>
+              )}
+            </div>
+
+            {/* =================================================
+                تأكيد كلمة المرور
+                تم إضافته لحل خطأ:
+                The password field confirmation does not match.
+            ================================================= */}
+
+            <div>
+              <label
+                htmlFor="password_confirmation"
+                className={labelClass}
+              >
+                تأكيد كلمة المرور
+              </label>
+
+              <input
+                id="password_confirmation"
+                name="password_confirmation"
+                type="password"
+                value={formData.password_confirmation}
+                onChange={handleChange}
+                placeholder="أعد إدخال كلمة المرور"
+                className={inputClass}
+              />
+
+              {errors.password_confirmation && (
+                <p className="mt-1.5 text-xs text-red-500">
+                  {errors.password_confirmation}
+                </p>
+              )}
+            </div>
+
+            {/* البلدية */}
+
+            <div>
+              <label
+                htmlFor="municipalityId"
+                className={labelClass}
+              >
                 البلدية
               </label>
 
@@ -230,35 +545,27 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
                 name="municipalityId"
                 value={formData.municipalityId}
                 onChange={handleChange}
+                disabled={isLoadingMunicipalities}
                 className={selectClass}
               >
-                <option value="" className="dark:bg-[#121b24]">
-                  اختر البلدية
+                <option
+                  value=""
+                  className="dark:bg-[#121b24]"
+                >
+                  {isLoadingMunicipalities
+                    ? "جاري تحميل البلديات..."
+                    : "اختر البلدية"}
                 </option>
 
-                <option value="MUN-001" className="dark:bg-[#121b24]">
-                  MUN-001
-                </option>
-
-                <option value="MUN-002" className="dark:bg-[#121b24]">
-                  MUN-002
-                </option>
-
-                <option value="MUN-003" className="dark:bg-[#121b24]">
-                  MUN-003
-                </option>
-
-                <option value="MUN-004" className="dark:bg-[#121b24]">
-                  MUN-004
-                </option>
-
-                <option value="MUN-005" className="dark:bg-[#121b24]">
-                  MUN-005
-                </option>
-
-                <option value="MUN-006" className="dark:bg-[#121b24]">
-                  MUN-006
-                </option>
+                {municipalities.map((municipality) => (
+                  <option
+                    key={municipality.id}
+                    value={municipality.id}
+                    className="dark:bg-[#121b24]"
+                  >
+                    {municipality.name}
+                  </option>
+                ))}
               </select>
 
               {errors.municipalityId && (
@@ -269,8 +576,12 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
             </div>
 
             {/* تاريخ التوظيف */}
+
             <div>
-              <label htmlFor="hireDate" className={labelClass}>
+              <label
+                htmlFor="hireDate"
+                className={labelClass}
+              >
                 تاريخ التوظيف
               </label>
 
@@ -290,9 +601,13 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
               )}
             </div>
 
-            {/* الدور الوظيفي */}
+            {/* الدور */}
+
             <div>
-              <label htmlFor="role" className={labelClass}>
+              <label
+                htmlFor="role"
+                className={labelClass}
+              >
                 الدور الوظيفي
               </label>
 
@@ -301,19 +616,25 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
+                disabled={isLoadingRoles}
                 className={selectClass}
               >
-                <option value="" className="dark:bg-[#121b24]">
-                  اختر الدور الوظيفي
+                <option
+                  value=""
+                  className="dark:bg-[#121b24]"
+                >
+                  {isLoadingRoles
+                    ? "جاري تحميل الأدوار..."
+                    : "اختر الدور الوظيفي"}
                 </option>
 
-                {employeeFilters.rolesOptions.map((role) => (
+                {roles.map((role) => (
                   <option
-                    key={role}
-                    value={role}
+                    key={role.id}
+                    value={role.name}
                     className="dark:bg-[#121b24]"
                   >
-                    {role}
+                    {role.name}
                   </option>
                 ))}
               </select>
@@ -326,8 +647,12 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
             </div>
 
             {/* الحالة */}
+
             <div>
-              <label htmlFor="status" className={labelClass}>
+              <label
+                htmlFor="status"
+                className={labelClass}
+              >
                 الحالة
               </label>
 
@@ -338,15 +663,26 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
                 onChange={handleChange}
                 className={selectClass}
               >
-                {employeeFilters.statusOptions.map((status) => (
-                  <option
-                    key={status}
-                    value={status}
-                    className="dark:bg-[#121b24]"
-                  >
-                    {status}
-                  </option>
-                ))}
+                <option
+                  value="active"
+                  className="dark:bg-[#121b24]"
+                >
+                  active
+                </option>
+
+                <option
+                  value="suspended"
+                  className="dark:bg-[#121b24]"
+                >
+                  suspended
+                </option>
+
+                <option
+                  value="retired"
+                  className="dark:bg-[#121b24]"
+                >
+                  retired
+                </option>
               </select>
 
               {errors.status && (
@@ -355,26 +691,44 @@ function AddEmployeeForm({ onClose, onAddEmployee }) {
                 </p>
               )}
             </div>
-
           </div>
 
-          {/* Buttons */}
+          {/* =====================================================
+              Buttons
+          ===================================================== */}
+
           <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-start dark:border-white/10">
 
             <button
               type="button"
               onClick={onClose}
-              className="flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-[#121b24] dark:text-slate-200 dark:hover:bg-[#17212b]"
+              disabled={isSubmitting}
+              className="flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-[#121b24] dark:text-slate-200 dark:hover:bg-[#17212b]"
             >
               إلغاء
             </button>
 
             <button
               type="submit"
-              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 text-sm font-medium text-white shadow-[0_10px_24px_rgba(16,185,129,0.22)] transition hover:bg-emerald-600"
+              disabled={isSubmitting}
+              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 text-sm font-medium text-white shadow-[0_10px_24px_rgba(16,185,129,0.22)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Plus size={18} />
-              إضافة الموظف
+              {isSubmitting ? (
+                <>
+                  <Loader2
+                    size={18}
+                    className="animate-spin"
+                  />
+
+                  جاري الإضافة...
+                </>
+              ) : (
+                <>
+                  <Plus size={18} />
+
+                  إضافة الموظف
+                </>
+              )}
             </button>
 
           </div>
