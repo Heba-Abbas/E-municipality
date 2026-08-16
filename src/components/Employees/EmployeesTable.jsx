@@ -3,8 +3,8 @@ import { Edit3, Eye, Trash2, Users2 } from "lucide-react";
 import EmployeesActions from "./EmployeeActions";
 
 const statusStyles = {
-  مفعل: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300",
-  مجمد: "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300",
+  active: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300",
+  inactive: "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300",
 };
 
 function EmployeesTable({ visibleEmployees, totalFilteredCount }) {
@@ -41,37 +41,12 @@ function EmployeesTable({ visibleEmployees, totalFilteredCount }) {
                 #
               </th>
 
-              <th className="px-4 py-4">
-                الرقم الوظيفي
-              </th>
-
-              <th className="px-4 py-4">
-                الاسم الكامل
-              </th>
-
-              <th className="px-4 py-4">
-                الرقم الوطني
-              </th>
-
-              <th className="px-4 py-4">
-                الهاتف
-              </th>
-
-              <th className="px-4 py-4">
-                البريد الإلكتروني
-              </th>
-
-              <th className="px-4 py-4">
-                الدور
-              </th>
-
-              <th className="px-4 py-4">
-                تاريخ التوظيف
-              </th>
-
-              <th className="px-4 py-4">
-                الحالة
-              </th>
+              <th className="px-4 py-4">الاسم الكامل</th>
+              <th className="px-4 py-4">البريد الإلكتروني</th>
+              <th className="px-4 py-4">الهاتف</th>
+              <th className="px-4 py-4">الدور</th>
+              <th className="px-4 py-4">تاريخ التوظيف</th>
+              <th className="px-4 py-4">الحالة</th>
 
               <th className="w-36 px-4 py-4 text-center">
                 الإجراءات
@@ -91,24 +66,9 @@ function EmployeesTable({ visibleEmployees, totalFilteredCount }) {
                   {employee.id}
                 </td>
 
-                {/* الرقم الوظيفي */}
-                <td className="px-4 py-4 font-medium text-slate-900 dark:text-slate-100">
-                  {employee.jobTd}
-                </td>
-
                 {/* الاسم */}
                 <td className="px-4 py-4 text-slate-800 dark:text-slate-200">
-                  {employee.fullName}
-                </td>
-
-                {/* الرقم الوطني */}
-                <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
-                  {employee.nationalId}
-                </td>
-
-                {/* الهاتف */}
-                <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
-                  {employee.phone}
+                  {employee.full_name}
                 </td>
 
                 {/* البريد الإلكتروني */}
@@ -116,25 +76,25 @@ function EmployeesTable({ visibleEmployees, totalFilteredCount }) {
                   {employee.email}
                 </td>
 
-                {/* الدور */}
+                {/* الهاتف */}
                 <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
-                  {employee.role}
+                  {employee.phone_number}
+                </td>
+
+                {/* الدور (أول دور إن وجد) */}
+                <td className="px-4 py-4 text-slate-600 dark:text-slate-300">
+                  {employee.roles && employee.roles.length > 0 ? employee.roles[0].name : "-"}
                 </td>
 
                 {/* تاريخ التوظيف */}
                 <td className="whitespace-nowrap px-4 py-4 text-slate-600 dark:text-slate-300">
-                  {employee.hireDate}
+                  {employee.employee_profile?.hire_date || "-"}
                 </td>
 
                 {/* الحالة */}
                 <td className="px-4 py-4">
-                  <span
-                    className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${
-                      statusStyles[employee.status] ||
-                      "bg-slate-100 text-slate-800 dark:bg-slate-500/20 dark:text-slate-300"
-                    }`}
-                  >
-                    {employee.status}
+                  <span className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${statusStyles[employee.employee_profile?.status || ''] || 'bg-slate-100 text-slate-800 dark:bg-slate-500/20 dark:text-slate-300'}`}>
+                    {employee.employee_profile?.status || "-"}
                   </span>
                 </td>
 

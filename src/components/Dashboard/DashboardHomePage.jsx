@@ -37,7 +37,7 @@ function DashboardHomePage() {
   const [distributionError, setDistributionError] = useState('')
 
   // ==========================================
-  /
+  // جلب بيانات الشكاوى
   // GET /api/complaints/statistics
   // GET /api/unified-complaints
   // ==========================================

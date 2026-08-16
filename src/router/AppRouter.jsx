@@ -12,6 +12,10 @@ import ComingSoonPage from '../pages/ComingSoonPage'
 import RolesPermissionsPage from "./../pages/RolesPermissionsPage";
 import MunicipalitiesPage from './../pages/MunicipalitiesPage';
 import ServiceTypesPage from "../pages/ServiceTypesPage";
+import TechnicalOfficeRequestsPage from "../pages/TechnicalOfficeRequestsPage";
+import EngineeringOfficeRequestsPage from "../pages/EngineeringOfficeRequestsPage";
+import MayorRequestsPage from "../pages/MayorRequestsPage";
+import FieldInspectorPage from "./../pages/FieldInspectorPage";
 import ComplaintReportsPage from "../pages/ComplaintReportsPage";
 import ComplaintReportDetailsPage from "../pages/ComplaintReportDetailsPage";
 import UnifiedComplaintsPage from "../pages/UnifiedComplaintsPage";
@@ -40,14 +44,20 @@ function AppRouter() {
        <Route path="/dashboard/services" element={<ServiceTypesPage />} />
         <Route path="/dashboard/departments" element={<ComingSoonPage title="الأقسام" />} />
         <Route path="/dashboard/municipalities" element={<MunicipalitiesPage />} />
-        <Route path="/dashboard/roles-permissions" element={<RolesPermissionsPage />}
-/>
+        <Route path="/dashboard/roles-permissions" element={<RolesPermissionsPage />} />
+        <Route path="/dashboard/technical-office/service-requests" element={<TechnicalOfficeRequestsPage />}/>
+        <Route path="/dashboard/engineering-office/service-requests" element={<EngineeringOfficeRequestsPage />}/>
+        <Route path="/dashboard/mayor/service-requests" element={<MayorRequestsPage />} />
+        <Route path="/dashboard/field-inspector/service-requests" element={<FieldInspectorPage />} />
+        <Route path="/dashboard/admin/service-requests" element={<ServiceTypesPage />} />
 
+        {/* الشكاوى — المكتب الفني */}
         <Route path="/dashboard/complaints/reports" element={<ComplaintReportsPage />} />
         <Route path="/dashboard/complaints/reports/:id" element={<ComplaintReportDetailsPage />} />
         <Route path="/dashboard/complaints/unified" element={<UnifiedComplaintsPage />} />
         <Route path="/dashboard/complaints/unified/:id" element={<UnifiedComplaintDetailsPage />} />
 
+        {/* الشكاوى — مدير القسم */}
         <Route path="/dashboard/complaints/department" element={<DepartmentComplaintsPage />} />
         <Route path="/dashboard/complaints/department/:id" element={<DepartmentComplaintDetailsPage />} />
 
