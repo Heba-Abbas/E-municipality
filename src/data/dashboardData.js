@@ -28,19 +28,19 @@ export const complaintDistribution = [
     label: 'مكتمل',
     value: 146,
     percent: 65,
-    color: 'bg-emerald-500',
+    color: '#10b981',
   },
   {
     label: 'قيد المعالجة',
     value: 61,
     percent: 27,
-    color: 'bg-lime-400',
+    color: '#a3e635',
   },
   {
     label: 'غير مدفوع',
     value: 16,
     percent: 8,
-    color: 'bg-emerald-200',
+    color: '#a7f3d0',
   },
 ]
 
@@ -108,8 +108,8 @@ export const sidebarItems = [
     label: 'لوحة التحكم',
     path: '/dashboard',
     icon: 'dashboard',
+
     allowedRoles: [
-      'system_admin',
       'mayor',
       'technical_office',
       'municipality_admin',
@@ -120,6 +120,7 @@ export const sidebarItems = [
     label: 'الموظفين',
     path: '/dashboard/employees',
     icon: 'users',
+
     allowedRoles: [
       'system_admin',
       'municipality_admin',
@@ -168,6 +169,7 @@ export const sidebarItems = [
     label: 'البلديات',
     path: '/dashboard/municipalities',
     icon: 'municipalities',
+
     allowedRoles: ['system_admin'],
   },
 
@@ -175,6 +177,7 @@ export const sidebarItems = [
     label: 'الصلاحيات',
     path: '/dashboard/roles-permissions',
     icon: 'roles',
+
     allowedRoles: ['system_admin'],
   },
 
@@ -182,6 +185,7 @@ export const sidebarItems = [
     label: 'الشكاوى',
     path: '/dashboard/complaints/reports',
     icon: 'complaints',
+
     allowedRoles: ['technical_office'],
   },
 
@@ -189,13 +193,56 @@ export const sidebarItems = [
     label: 'شكاوى قسمي',
     path: '/dashboard/complaints/department',
     icon: 'departmentComplaints',
+
     allowedRoles: ['department_manager'],
   },
 ]
 
 /*
 |--------------------------------------------------------------------------
-| Get Sidebar Items By Role
+| الحصول على Role المستخدم
+|--------------------------------------------------------------------------
+|
+| Login response:
+|
+| data.user.roles = ["system_admin"]
+|
+*/
+
+export const getCurrentUser = () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'))
+
+    return user || null
+  } catch (error) {
+    console.error('Failed to parse user:', error)
+    return null
+  }
+}
+
+export const getCurrentRole = () => {
+  const user = getCurrentUser()
+
+  if (!user) {
+    return null
+  }
+
+  /*
+   * الـ API يرجع:
+   *
+   * roles: ["system_admin"]
+   */
+
+  if (Array.isArray(user.roles) && user.roles.length > 0) {
+    return user.roles[0]
+  }
+
+  return null
+}
+
+/*
+|--------------------------------------------------------------------------
+| Filter Sidebar By Role
 |--------------------------------------------------------------------------
 */
 
@@ -207,18 +254,16 @@ export const getSidebarItemsByRole = (role) => {
   return sidebarItems
     .map((item) => {
       /*
-       * إذا كان القسم يحتوي على أبناء
-       * مثل الخدمات
+       * الخدمات
        */
       if (Array.isArray(item.children)) {
-        const visibleChildren = item.children.filter(
-          (child) =>
-            child.allowedRoles?.includes(role)
+        const visibleChildren = item.children.filter((child) =>
+          child.allowedRoles?.includes(role)
         )
 
         /*
-         * إذا ما عنده أي خدمة مسموحة
-         * نخفي قسم الخدمات بالكامل
+         * إذا ما عنده أي خدمة
+         * لا تظهر الخدمات أبداً
          */
         if (visibleChildren.length === 0) {
           return null
@@ -240,4 +285,82 @@ export const getSidebarItemsByRole = (role) => {
       return null
     })
     .filter(Boolean)
+}
+
+/*
+|--------------------------------------------------------------------------
+| أول صفحة مسموحة لكل Role
+|--------------------------------------------------------------------------
+*/
+
+export const firstRouteByRole = {
+  system_admin: '/dashboard/employees',
+
+  mayor: '/dashboard',
+
+  technical_office: '/dashboard',
+
+  engineering_office:
+    '/dashboard/engineering-office/service-requests',
+
+  department_manager:
+    '/dashboard/complaints/department',
+
+  field_inspector:
+    '/dashboard/field-inspector/service-requests',
+
+  municipality_admin:
+    '/dashboard',
+}
+
+/*
+|--------------------------------------------------------------------------
+| Get First Allowed Route
+|--------------------------------------------------------------------------
+*/
+
+export const getFirstAllowedRoute = (role) => {
+  if (!role) {
+    return '/login'
+  }
+
+  return firstRouteByRole[role] || '/login'
+}
+
+/*
+|--------------------------------------------------------------------------
+| Check Route Permission
+|--------------------------------------------------------------------------
+*/
+
+export const canAccessRoute = (role, path) => {
+  if (!role || !path) {
+    return false
+  }
+
+  const items = getSidebarItemsByRole(role)
+
+  for (const item of items) {
+    /*
+     * القسم الرئيسي
+     */
+    if (item.path === path) {
+      return true
+    }
+
+    /*
+     * الأبناء
+     */
+    if (Array.isArray(item.children)) {
+      const childExists = item.children.some(
+        (child) => child.path === path
+      )
+
+      if (childExists) {
+        return true
+      }
+    }
+  }
+
+  return false
 }
